@@ -7,7 +7,7 @@ load_dotenv()
 
 # The DB server is held on https://cloud.mongodb.com/v2
 DATABASE_URL=f'mongodb+srv://mphpc:{os.environ.get("password")}@mongodb-heroku-mp-hpc-a.dzddt.mongodb.net/hpcdb?retryWrites=true&w=majority'
-print(DATABASE_URL)
+# print(DATABASE_URL)
 client = MongoClient(DATABASE_URL)
 db = client.myDatabase # TODO: change the name of remote DB, need to ask Andreas to move it
 

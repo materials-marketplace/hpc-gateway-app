@@ -1,8 +1,9 @@
 from functools import wraps
+import os
 from flask import request
 import requests
 
-USERINFO_URL = "https://www.materials-marketplace.eu/auth/realms/marketplace/protocol/openid-connect/userinfo"
+MP_USERINFO_URL = os.environ.get("MP_USERINFO_URL")
 
 def token_required(f):
     @wraps(f)
@@ -25,7 +26,7 @@ def token_required(f):
 
             # Use GET request method
             resp = requests.get(
-                USERINFO_URL,
+                MP_USERINFO_URL,
                 headers=headers,
                 verify=None,
             )

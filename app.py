@@ -1,36 +1,62 @@
 import os
 import io
-from dotenv import load_dotenv
-from flask import Flask, request, jsonify
-from flask import send_file
-from firecrest_sdk import Firecrest
+import threading
+import uuid
+import logging
+from logging.handlers import TimedRotatingFileHandler
 import requests
+
+from flask import Flask, request, jsonify, g
+from flask import send_file
 from flask import Flask, flash, request, render_template
 from werkzeug.utils import secure_filename
-import uuid
+import firecrest as f7t
 
-load_dotenv()
+from hpc_gateway.f7t import HardCodeTokenAuth
+from hpc_gateway.models import Jobs, User
+from hpc_gateway.auth_middleware import token_required
 
-WHITE_LIST = ['jusong.yu@epfl.ch', 'andreas.aigner@dcs-computing.com', 'simon.adorf@epfl.ch']
+from dotenv import load_dotenv
+
+# Only test need load_dotenv
+load_dotenv("./deploy/common.env")
+
+# Checks if an environment variable injected to F7T is a valid True value
+# var <- object
+# returns -> boolean
+def get_boolean_var(var):
+    # ensure variable to be a string
+    var = str(var)
+    # True, true or TRUE
+    # Yes, yes or YES
+    # 1
+
+    return var.upper() == "TRUE" or var.upper() == "YES" or var == "1"
+
+debug = get_boolean_var(os.environ.get("HPCGATEWAY_DEBUG_MODE", False))
+USE_SSL = get_boolean_var(os.environ.get("HPCGATEWAY_USE_SSL", False))
+
+# WHITE_LIST = ['jusong.yu@epfl.ch', 'andreas.aigner@dcs-computing.com', 'simon.adorf@epfl.ch']
 # Setup the client for the specific account
-client = Firecrest(firecrest_url="https://firecrest.cscs.ch/")
-ROOT_FOLDER = '/scratch/snx3000/jyu/firecrest/'
+# Create an authorization object with Client Credentials authorization grant
+    
+hardcode = HardCodeTokenAuth(
+    token=os.environ.get("F7T_TOKEN"),
+)
 
-ALLOWED_EXTENSIONS = {'txt', 'sh', 'in', 'sif', 'stl', 'asx', 'lic'}
+# Setup the client for the specific account
+f7t_client = f7t.Firecrest(
+    firecrest_url=os.environ.get("F7T_URL"), 
+    authorization=hardcode,
+)
+
+EXEC_HOME_FOLDER = os.environ.get("EXEC_HOME_FOLDER")
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    # TODO check file size < 10 MB
+    return '.' in filename and True
 
 app = Flask(__name__)
-SECRET_KEY = os.environ.get('SECRET_KEY') or 'this is a secret'
-print(SECRET_KEY)
-
-app.config['SECRET_KEY'] = SECRET_KEY
-app.config['ROOT_FOLDER'] = ROOT_FOLDER
-
-from models import Jobs, User
-from auth_middleware import token_required
 
 def email2repo(email):
     """Since the username allowed space character contained it is not proper to be 
@@ -55,7 +81,7 @@ def heartbeat(current_user):
             'message': 'user is available.'
         }
         try:
-            fresp = client.heartbeat()
+            fresp = f7t_client.heartbeat()
             resp.update(fresp)
         except Exception as e:
             raise e
@@ -67,6 +93,12 @@ def broker():
     resp = {'test': 'DONE!'}
     
     return resp, 200
+
+@app.route("/f7ttest", methods=["GET"])
+def f7ttest():
+    parameters = f7t_client.parameters()
+    
+    return jsonify(parameters=parameters), 200
 
 @app.route("/login/")
 def frontend():
@@ -119,24 +151,20 @@ def register(current_user):
     try:
         email = current_user['email']
         name = current_user['name']
-        if email in WHITE_LIST:
-            try:
-                # user name and email validate
-                user = User().create(name=name, email=email)
-            except Exception as e:
-                return {
-                    'error': 'failed to create user in DB.'
-                }, 500
-        else:
+        
+        try:
+            # user name and email validate
+            user = User().create(name=name, email=email)
+        except Exception as e:
             return {
-                'error': f'User <{name}> is not allowed to access database.'
-            }, 406
+                'error': 'failed to create user in DB.'
+            }, 500
             
         # user are created or aready exist (None return from create method)
         if user:
             # create the repository for user to store file
             repo = email2repo(email)
-            client.mkdir(target_path=os.path.join(app.config['ROOT_FOLDER'], repo))
+            f7t_client.mkdir(target_path=os.path.join(app.config['ROOT_FOLDER'], repo))
             
             # New db user created
             resp = {
@@ -172,7 +200,7 @@ def create_job(current_user):
     
     try:
         target_path = os.path.join(app.config['ROOT_FOLDER'], repo, resourceid)
-        client.mkdir(target_path=target_path)
+        f7t_client.mkdir(target_path=target_path)
     except Exception as e:
         return {
             "function": 'create_job',
@@ -195,7 +223,7 @@ def run_job(current_user, resourceid):
     script_path = os.path.join(workdir, 'submit.sh')
     # TODO: check (error return code) the job script exist
     try:
-        resp = client.submit(job_script=script_path)
+        resp = f7t_client.submit(job_script=script_path)
         user = User().get_by_email(current_user['email'])
         userid = user['_id']
         jobid = resp.get('jobid')
@@ -227,7 +255,7 @@ def cancel_job(current_user, resourceid):
         app.logger.debug(userid)
         app.logger.debug(jobid)
         
-        resp = client.cancel(jobid=jobid)
+        resp = f7t_client.cancel(jobid=jobid)
         # TODO update the state of job entity.
         
     except Exception as e:
@@ -283,7 +311,7 @@ def list_jobs(current_user):
         return f"no jobs in list of user {user['name']}", 400
         
     try:
-        fresp = client.poll(jobs=jobs)
+        fresp = f7t_client.poll(jobs=jobs)
     except Exception as e:
         raise e
     
@@ -306,7 +334,7 @@ def download_remote(current_user, resourceid):
     binary_stream = io.BytesIO()
     
     try:
-        client.simple_download(source_path=source_path, target_path=binary_stream)
+        f7t_client.simple_download(source_path=source_path, target_path=binary_stream)
 
         download_name = os.path.basename(filename)
         binary_stream.seek(0) # buffer position from start
@@ -331,7 +359,7 @@ def list_remote(current_user, resourceid):
     target_path = os.path.join(ROOT_FOLDER, repo, resourceid, filename)
     
     try:
-        resp = client.list_files(target_path=target_path)
+        resp = f7t_client.list_files(target_path=target_path)
     except Exception as exc:
         return {"message": f"Failed with {exc}"}, 402
     else:
@@ -362,7 +390,7 @@ def upload_remote(current_user, resourceid):
         filename = secure_filename(file.filename)
         binary_stream = io.BytesIO(file.read())
         
-        resp = client.simple_upload(binary_stream, target_path, filename)
+        resp = f7t_client.simple_upload(binary_stream, target_path, filename)
     
         return resp, 200
         
@@ -383,7 +411,7 @@ def delete_remote(current_user, resourceid):
     target_path = os.path.join(ROOT_FOLDER, repo, resourceid, filename)
     
     try:
-        client.simple_delete(target_path=target_path)
+        f7t_client.simple_delete(target_path=target_path)
     except Exception as exc:
         return {"message": f"Failed with {exc}"}, 402
     else:
@@ -405,10 +433,42 @@ def forbidden(e):
         "error": str(e),
         "data": None
     }), 404
+    
+# formatter is executed for every log
+class LogRequestFormatter(logging.Formatter):
+    def format(self, record):
+        try:
+            # try to get TID from Flask g object, it's set on @app.before_request on each microservice
+            record.TID = g.TID
+        except:
+            try:
+                record.TID = threading.current_thread().name
+            except:
+                record.TID = 'notid'
+
+        return super().format(record)
 
 
 if __name__ == "__main__":
-    app.run(
-        debug=True, 
-        port=5005, 
-    )
+    LOG_PATH = os.environ.get("HPCGATEWAY_LOG_PATH", "./deploy/logs/hpc-gateway")
+    # timed rotation: 1 (interval) rotation per day (when="D")
+    logHandler = TimedRotatingFileHandler(f'{LOG_PATH}/certificator.log', when='D', interval=1)
+
+    logFormatter = LogRequestFormatter('%(asctime)s,%(msecs)d %(thread)s [%(TID)s] %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
+                                    '%Y-%m-%dT%H:%M:%S')
+    logHandler.setFormatter(logFormatter)
+
+    # get app log (Flask+werkzeug+python)
+    logger = logging.getLogger()
+
+    # set handler to logger
+    logger.addHandler(logHandler)
+    logging.getLogger().setLevel(logging.DEBUG)
+
+    # disable Flask internal logging to avoid full url exposure
+    logging.getLogger('werkzeug').disabled = False
+        
+    if USE_SSL:
+        app.run(debug=debug, host='0.0.0.0', port=5253, ssl_context='adhoc')
+    else:
+        app.run(debug=debug, host='0.0.0.0', port=5253)

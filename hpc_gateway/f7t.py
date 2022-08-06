@@ -1,23 +1,30 @@
-from firecrest import ClientCredentialsAuth
-from firecrest import Firecrest as CscsFirecrest
+import firecrest as f7t
 import requests
 import os
 from contextlib import nullcontext
-from dotenv import load_dotenv
 
-load_dotenv()
-
+# For CSCS daint only
 # Configuration parameters for the Authorization Object
 client_id = os.environ.get('FIRECREST_CLIENT_ID')
 client_secret = os.environ.get('FIRECREST_CLIENT_SECRET')
 token_uri = "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
 
 # Create an authorization account object with Client Credentials authorization grant
-keycloak = ClientCredentialsAuth(
+keycloak = f7t.ClientCredentialsAuth(
     client_id, client_secret, token_uri
 )
 
-class Firecrest(CscsFirecrest):
+# Create an authorization object with Client Credentials authorization grant
+class HardCodeTokenAuth:
+    
+    def __init__(self, token):
+        self._token = token
+        
+    def get_access_token(self):
+        return self._token
+    
+# This is not used but directly call
+class Firecrest(f7t.Firecrest):
     
     _MACHINE = 'daint'
     _SYSTEM = 'daint'

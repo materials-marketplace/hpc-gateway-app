@@ -22,16 +22,15 @@ def relay(request: MessageBrokerRequestModel):
     """get request from broker, process the request so hpc app can understand it.
     then relay it to hpc app then return (resp, status_code)
     """
-    # try:
-    #     token = request.headers["authorization"].split(" ")[1]
-    #     print(token)
-    # except:
-    #     return {
-    #         "message": "Authentication Token is missing!",
-    #         "data": None,
-    #         "error": "Unauthorized"
-    #     }, 401
-    token = 'aoe'
+    try:
+        token = request.headers["authorization"].split(" ")[1]
+        # print(token)
+    except:
+        return {
+            "message": "Authentication Token is missing from broker's request!",
+            "data": None,
+            "error": "Unauthorized"
+        }, 401
         
     headers = {
         "Accept": "application/json",
@@ -40,7 +39,7 @@ def relay(request: MessageBrokerRequestModel):
     }
     
     endpoint = request.endpoint
-    endpoint = '/broker'    # test
+    # endpoint = '/broker'    # test
     abs_url = urljoin(HPC_GATEWAY_URL, endpoint)
 
     # Use GET request method
@@ -58,7 +57,7 @@ def hpc_message_relayer(
 ) -> MessageBrokerResponseModel:
     
     response, status_code = relay(request_message)
-    print(request_message)
+    # print(request_message)
     
     response_message = MessageBrokerResponseModel(
         status_code=status_code,
