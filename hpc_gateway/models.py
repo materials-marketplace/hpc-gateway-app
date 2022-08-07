@@ -6,10 +6,11 @@ from pymongo import MongoClient
 load_dotenv()
 
 # The DB server is held on https://cloud.mongodb.com/v2
-DATABASE_URL=f'mongodb+srv://mphpc:{os.environ.get("password")}@mongodb-heroku-mp-hpc-a.dzddt.mongodb.net/hpcdb?retryWrites=true&w=majority'
+# DATABASE_URL=f'mongodb+srv://mphpc:{os.environ.get("password")}@mongodb-heroku-mp-hpc-a.dzddt.mongodb.net/hpcdb?retryWrites=true&w=majority'
 # print(DATABASE_URL)
+DATABASE_URL=os.environ.get("HPCGATEWAY_MONGO_URL")
 client = MongoClient(DATABASE_URL)
-db = client.myDatabase # TODO: change the name of remote DB, need to ask Andreas to move it
+db = client.f7t
 
 class Jobs:
     """Jobs Model
@@ -69,6 +70,7 @@ class Jobs:
 class User:
     """User Model"""
     def __init__(self):
+        self.db = db
         return
 
     def create(self, name="", email=""):

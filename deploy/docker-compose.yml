@@ -4,8 +4,8 @@ services:
 
   hpc-gateway:
     restart: always
-    # depends_on:
-    #   - mongo
+    depends_on:
+      - mongo
     build:
       context: ..
       dockerfile: deploy/base/Dockerfile
@@ -13,23 +13,25 @@ services:
         CONFIG_FILE: config.json
     env_file:
       - ./common.env
-    environment:
-      HPCGATEWAY_MONGO_URI: 'mongodb://mongo:27017'
     volumes:
       - './logs/hpc-gateway:/var/log:delegated'
-    # ports:
-    #   - '5253:5253'
-    network_mode: "host"
+    ports:
+      - '5253:5253'
+    networks:
+      - f7t
+      - hpcgw
 
   # rpc_server:
 
-  # mongo:
-  #   restart: always
-  #   image: mongo:4
-  #   networks:
-  #     - hpc_gateway
+  mongo:
+    restart: always
+    image: mongo:4
+    volumes:
+      - '/home/jyu/gwdb:/data/db'
+    networks:
+      - hpcgw
 
 networks:
-  hpc_proxy:
-    external:
-      name: f7t
+  f7t:
+    external: true
+  hpcgw:

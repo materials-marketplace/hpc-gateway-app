@@ -100,6 +100,21 @@ def f7ttest():
     
     return jsonify(parameters=parameters), 200
 
+@app.route("/dbtest")
+def dbtest():
+    name = "jason"
+    email = "j.y@ca.h"
+    try:
+        # user name and email validate
+        user = User().create(name=name, email=email)
+    except Exception as e:
+        return {
+            'error': 'failed to create user in DB.'
+        }, 500
+        
+    user_get = User().get_by_email(email=email)
+    return jsonify(user_get=user_get, user=user), 200
+
 @app.route("/login/")
 def frontend():
     return render_template('index.html')

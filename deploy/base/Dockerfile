@@ -11,6 +11,4 @@ RUN pip install -U pip setuptools wheel \
 
 COPY .docker/run.sh ./
 
-EXPOSE 80
-
 CMD ["/app/run.sh"]
