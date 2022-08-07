@@ -18,8 +18,8 @@ from hpc_gateway.auth_middleware import token_required
 
 from dotenv import load_dotenv
 
-# Only test need load_dotenv
-load_dotenv("./deploy/common.env")
+# # Only test need load_dotenv
+# load_dotenv("./deploy/common.env")
 
 # Checks if an environment variable injected to F7T is a valid True value
 # var <- object

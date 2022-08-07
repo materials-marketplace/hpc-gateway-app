@@ -17,10 +17,9 @@ services:
       HPCGATEWAY_MONGO_URI: 'mongodb://mongo:27017'
     volumes:
       - './logs/hpc-gateway:/var/log:delegated'
-    ports:
-      - '5253:80'
-    networks:
-      - hpc_gateway
+    # ports:
+    #   - '5253:5253'
+    network_mode: "host"
 
   # rpc_server:
 
@@ -31,4 +30,6 @@ services:
   #     - hpc_gateway
 
 networks:
-  hpc_gateway:
+  hpc_proxy:
+    external:
+      name: f7t

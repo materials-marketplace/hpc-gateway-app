@@ -35,3 +35,55 @@
 2022-08-06T15:17:07,736 139954730563328 [Thread-3] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 127.0.0.1:8000
 2022-08-06T15:17:07,766 139954730563328 [Thread-3] DEBUG    [connectionpool.py:456] http://127.0.0.1:8000 "GET /status/parameters HTTP/1.1" 200 862
 2022-08-06T15:17:07,769 139954730563328 [Thread-3] INFO     [_internal.py:224] 127.0.0.1 - - [06/Aug/2022 15:17:07] "GET /f7ttest HTTP/1.1" 200 -
+2022-08-06T15:21:59,655 140506462517056 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.20.0.2:5253 (Press CTRL+C to quit)
+2022-08-06T15:21:59,656 140506462517056 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-06T15:22:00,3 140507220469568 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-06T15:22:00,4 140507220469568 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 613-610-831
+2022-08-06T15:22:16,988 140507078444800 [Thread-2] INFO     [_internal.py:224] 172.20.0.1 - - [06/Aug/2022 15:22:16] "GET /broker HTTP/1.1" 200 -
+2022-08-06T15:22:17,3 140507078444800 [Thread-3] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 127.0.0.1:8000
+2022-08-06T15:22:17,23 140507078444800 [Thread-3] INFO     [_internal.py:224] 172.20.0.1 - - [06/Aug/2022 15:22:17] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T15:22:42,249 140507078444800 [Thread-4] INFO     [_internal.py:224] 172.20.0.1 - - [06/Aug/2022 15:22:42] "GET /broker HTTP/1.1" 200 -
+2022-08-06T15:22:42,259 140507078444800 [Thread-5] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 127.0.0.1:8000
+2022-08-06T15:22:42,272 140507078444800 [Thread-5] INFO     [_internal.py:224] 172.20.0.1 - - [06/Aug/2022 15:22:42] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:00:15,164 140697953298240 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://192.168.220.2:5253 (Press CTRL+C to quit)
+2022-08-06T16:00:15,165 140697953298240 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-06T16:00:15,533 139893974857536 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-06T16:00:15,534 139893974857536 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 105-989-838
+2022-08-06T16:00:29,152 139893837645568 [Thread-2] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:00:29] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:00:29,162 139893829252864 [Thread-3] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 127.0.0.1:8000
+2022-08-06T16:00:29,177 139893829252864 [Thread-3] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:00:29] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:01:03,660 139893829252864 [Thread-4] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:01:03] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:01:03,670 139893829252864 [Thread-5] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 127.0.0.1:8000
+2022-08-06T16:01:03,684 139893829252864 [Thread-5] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:01:03] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:07:39,547 139892802639680 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://192.168.220.2:5253 (Press CTRL+C to quit)
+2022-08-06T16:07:39,548 139892802639680 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-06T16:07:39,948 140639759013696 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-06T16:07:39,948 140639759013696 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 105-989-838
+2022-08-06T16:07:47,290 140639618451200 [Thread-2] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:07:47] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:07:47,311 140639618451200 [Thread-3] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:07:47] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:07:49,522 140639618451200 [Thread-4] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:07:49] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:07:49,539 140639618451200 [Thread-5] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:07:49] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:07:50,881 140639618451200 [Thread-6] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:07:50] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:07:50,890 140639618451200 [Thread-7] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:07:50] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:08:52,172 140639618451200 [Thread-8] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:08:52] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:08:52,190 140639618451200 [Thread-9] INFO     [_internal.py:224] 192.168.220.1 - - [06/Aug/2022 16:08:52] "[35m[1mGET /f7ttest HTTP/1.1[0m" 500 -
+2022-08-06T16:11:47,647 139781192275776 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://10.19.81.251:5253 (Press CTRL+C to quit)
+2022-08-06T16:11:47,648 139781192275776 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-06T16:11:47,986 140411093931840 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-06T16:11:47,987 140411093931840 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 135-029-961
+2022-08-06T16:12:03,56 140411023939328 [Thread-2] INFO     [_internal.py:224] 127.0.0.1 - - [06/Aug/2022 16:12:03] "GET /broker HTTP/1.1" 200 -
+2022-08-06T16:12:03,67 140411023939328 [Thread-3] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 127.0.0.1:8000
+2022-08-06T16:12:03,122 140411023939328 [Thread-3] DEBUG    [connectionpool.py:456] http://127.0.0.1:8000 "GET /status/parameters HTTP/1.1" 200 862
+2022-08-06T16:12:03,126 140411023939328 [Thread-3] INFO     [_internal.py:224] 127.0.0.1 - - [06/Aug/2022 16:12:03] "GET /f7ttest HTTP/1.1" 200 -
