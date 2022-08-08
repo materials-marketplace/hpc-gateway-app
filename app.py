@@ -1,6 +1,7 @@
 from email import message
 import os
 import io
+import sys
 import threading
 import uuid
 import logging
@@ -68,28 +69,10 @@ def email2repo(email):
     repo = username.replace('.', '_')
     
     return repo
-    
-@app.route("/")
-@token_required
-def heartbeat(current_user):
-    user = User().get_by_email(current_user['email'])
-    if not user:
-        resp = {
-            'message': 'user not create yet, please register for DB first time.'
-        }
-        return resp, 401
-    else: 
-        resp = {
-            'message': 'user is available.'
-        }
-        try:
-            fresp = f7t_client.heartbeat()
-            resp.update(fresp)
-        except Exception as e:
-            raise e
-    
-    return resp, 200
 
+###################### 
+# ONLY FOR TEST
+# PLEASE REMOVE US WHEN RELEASE
 @app.route("/broker")
 def broker():
     resp = {'test': 'DONE!'}
@@ -116,6 +99,34 @@ def dbtest():
         
     user_get = User().get_by_email(email=email)
     return jsonify(user_get=user_get, user=user), 200
+## TEST ONLY
+#######################
+    
+@app.route("/")
+@token_required
+def heartbeat(current_user):
+    user = User().get_by_email(current_user['email'])
+    if not user:
+        return jsonify(
+            message='user not create yet, please register for DB first time.',
+        ), 401
+    else: 
+        repo = email2repo(current_user['email'])
+        target_path = os.path.join(EXEC_HOME_FOLDER, repo)
+        
+        try:
+            resp = f7t_client.list_files(machine=MACHINE, target_path=target_path)
+        except Exception as exc:
+            return jsonify(
+                message='User is available in DB but cluster not available.',
+                error=str(exc),
+            ), 401
+        else:
+            return jsonify(
+                output=resp,
+                message='system is ready for you, HAPPY COMPUTING!',
+            ), 200
+            
 
 
 @app.route("/user", methods=["GET"])
@@ -453,7 +464,7 @@ class LogRequestFormatter(logging.Formatter):
 if __name__ == "__main__":
     LOG_PATH = os.environ.get("HPCGATEWAY_LOG_PATH", "./deploy/logs/hpc-gateway")
     # timed rotation: 1 (interval) rotation per day (when="D")
-    logHandler = TimedRotatingFileHandler(f'{LOG_PATH}/certificator.log', when='D', interval=1)
+    logHandler = TimedRotatingFileHandler(f'{LOG_PATH}/gw.log', when='D', interval=1)
 
     logFormatter = LogRequestFormatter('%(asctime)s,%(msecs)d %(thread)s [%(TID)s] %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
                                     '%Y-%m-%dT%H:%M:%S')
@@ -467,7 +478,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.DEBUG)
 
     # disable Flask internal logging to avoid full url exposure
-    logging.getLogger('werkzeug').disabled = False
+    logging.getLogger('werkzeug').propagate = False
         
     if USE_SSL:
         app.run(debug=debug, host='0.0.0.0', port=5253, ssl_context='adhoc')

@@ -7,4 +7,4 @@ COPY broker/requirements.txt broker/rpc_server.py ./
 
 RUN pip install -r requirements.txt
 
-CMD ["python /app/rpc_server.py"]
+CMD ["python", "/app/rpc_server.py"]

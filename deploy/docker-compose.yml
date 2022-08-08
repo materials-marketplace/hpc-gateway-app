@@ -21,17 +21,19 @@ services:
       - f7t
       - hpcgw
 
-  # rpc-server:
-  #   restart: always
-  #   depends_on: 
-  #     - hpc-gateway
-  #   build:
-  #     context: ..
-  #     dockerfile: deploy/broker/Dockerfile
-  #   env_file:
-  #     - ./common.env
-  #   networks:
-  #     - hpcgw
+  rpc-server:
+    restart: always
+    depends_on: 
+      - hpc-gateway
+    build:
+      context: ..
+      dockerfile: deploy/broker/Dockerfile
+    env_file:
+      - ./common.env
+    volumes:
+      - './logs/broker:/var/log:delegated'
+    networks:
+      - hpcgw
 
   mongo:
     restart: always
