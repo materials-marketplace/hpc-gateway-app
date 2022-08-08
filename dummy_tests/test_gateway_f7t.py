@@ -4,9 +4,7 @@ import requests
 from urllib.parse import urljoin
 from dotenv import load_dotenv
 
-load_dotenv("../deploy/common.env")
-
-HPCGATEWAY_URL=os.environ.get("HPCGATEWAY_URL")
+HPCGATEWAY_URL="http://127.0.0.1:5253"
 
 rep = requests.get(urljoin(HPCGATEWAY_URL, 'broker'))
 print(rep.json(), rep)

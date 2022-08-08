@@ -188,3 +188,84 @@
 2022-08-07T10:13:06,948 140464370792256 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 641-440-297
 2022-08-07T10:13:13,708 140464309454592 [Thread-2] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:13:13] "GET /dbtest HTTP/1.1" 200 -
 2022-08-07T10:13:18,770 140464309454592 [Thread-3] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:13:18] "GET /dbtest HTTP/1.1" 200 -
+2022-08-07T10:48:04,431 139653926770496 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.24.0.3:5253 (Press CTRL+C to quit)
+2022-08-07T10:48:04,432 139653926770496 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-07T10:48:04,790 139830791706432 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-07T10:48:04,791 139830791706432 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 641-440-297
+2022-08-07T10:49:13,343 139830730106624 [Thread-2] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:49:13] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:49:13,352 139830730106624 [Thread-3] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:49:13,562 139830730106624 [Thread-3] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 401 73
+2022-08-07T10:49:13,566 139830730106624 [Thread-3] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:49:13] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T10:49:29,321 139830730106624 [Thread-4] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:49:29] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:49:29,329 139830730106624 [Thread-5] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:49:29,400 139830730106624 [Thread-5] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 401 73
+2022-08-07T10:49:29,405 139830730106624 [Thread-5] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:49:29] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T10:50:37,975 139830730106624 [Thread-6] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:50:37] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:50:37,987 139830730106624 [Thread-7] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:50:38,49 139830730106624 [Thread-7] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T10:50:38,74 139830730106624 [Thread-7] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:50:38] "GET /user/ HTTP/1.1" 200 -
+2022-08-07T10:50:44,765 139830730106624 [Thread-8] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:50:44] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:50:44,775 139830730106624 [Thread-9] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:50:44,864 139830730106624 [Thread-9] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T10:50:44,873 139830730106624 [Thread-9] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:50:44] "GET /user/ HTTP/1.1" 200 -
+2022-08-07T10:58:25,499 139830730106624 [Thread-10] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:58:25] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:58:25,507 139830730106624 [Thread-11] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:58:25,594 139830730106624 [Thread-11] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T10:58:25,599 139830730106624 [Thread-11] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:58:25] "GET /user/ HTTP/1.1" 200 -
+2022-08-07T10:58:25,618 139830730106624 [Thread-12] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:58:25] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T10:58:32,490 139830730106624 [Thread-13] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:58:32] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:58:32,501 139830730106624 [Thread-14] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:58:32,584 139830730106624 [Thread-14] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T10:58:32,591 139830730106624 [Thread-14] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:58:32] "GET /user/ HTTP/1.1" 200 -
+2022-08-07T10:58:32,604 139830730106624 [Thread-15] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:58:32] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T10:59:06,193 139830730106624 [Thread-16] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:59:06] "GET /broker HTTP/1.1" 200 -
+2022-08-07T10:59:06,203 139830730106624 [Thread-17] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 192.168.220.21:8000
+2022-08-07T10:59:06,247 139830730106624 [Thread-17] DEBUG    [connectionpool.py:456] http://192.168.220.21:8000 "GET /status/parameters HTTP/1.1" 200 862
+2022-08-07T10:59:06,253 139830730106624 [Thread-17] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:59:06] "GET /f7ttest HTTP/1.1" 200 -
+2022-08-07T10:59:35,635 139830730106624 [Thread-18] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:59:35] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T10:59:35,645 139830730106624 [Thread-19] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T10:59:35,728 139830730106624 [Thread-19] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T10:59:35,735 139830730106624 [Thread-19] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:59:35] "GET /user/ HTTP/1.1" 200 -
+2022-08-07T10:59:35,752 139830730106624 [Thread-20] INFO     [_internal.py:224] 172.24.0.1 - - [07/Aug/2022 10:59:35] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T11:50:48,954 139660441851712 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-07T11:50:48,956 139660441851712 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-07T11:50:49,312 139825527879488 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-07T11:50:49,314 139825527879488 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-07T11:51:26,397 139825394996992 [Thread-2] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:51:26] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T11:51:26,409 139825394996992 [Thread-3] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T11:51:26,506 139825394996992 [Thread-3] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 401 110
+2022-08-07T11:51:26,511 139825394996992 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:51:26] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T11:51:26,532 139825394996992 [Thread-4] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:51:26] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T11:51:30,714 139825394996992 [Thread-5] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:51:30] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T11:51:30,725 139825394996992 [Thread-6] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T11:51:30,794 139825394996992 [Thread-6] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 401 110
+2022-08-07T11:51:30,798 139825394996992 [Thread-6] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:51:30] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T11:51:30,817 139825394996992 [Thread-7] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:51:30] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T11:52:14,160 139825394996992 [Thread-8] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:52:14] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T11:52:14,170 139825394996992 [Thread-9] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T11:52:14,256 139825394996992 [Thread-9] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 401 110
+2022-08-07T11:52:14,261 139825394996992 [Thread-9] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:52:14] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T11:52:14,278 139825394996992 [Thread-10] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:52:14] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T11:53:21,780 139825394996992 [Thread-11] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:53:21] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T11:53:21,790 139825394996992 [Thread-12] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T11:53:21,881 139825394996992 [Thread-12] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T11:53:21,901 139825394996992 [Thread-12] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:53:21] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T11:53:21,918 139825394996992 [Thread-13] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 11:53:21] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-07T12:00:44,974 140624234440512 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-07T12:00:44,977 140624234440512 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-07T12:00:45,339 140084832626496 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-07T12:00:45,339 140084832626496 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-07T12:00:57,635 140084703647488 [Thread-2] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 12:00:57] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-07T12:00:57,645 140084703647488 [Thread-3] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-07T12:00:57,723 140084703647488 [Thread-3] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
+2022-08-07T12:00:57,738 140084703647488 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 12:00:57] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-07T12:00:57,749 140084703647488 [Thread-4] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 12:00:57] "[35m[1mPOST /user HTTP/1.1[0m" 500 -

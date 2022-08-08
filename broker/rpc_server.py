@@ -2,9 +2,6 @@ import json
 import requests
 import os
 from urllib.parse import urljoin
-from dotenv import load_dotenv
-
-load_dotenv()
 
 from marketplace_standard_app_api.models.message_broker import (
     MessageBrokerRequestModel,
@@ -16,7 +13,7 @@ from marketplace.message_broker.rpc_server import RpcServer
 gateway_client_id = os.environ.get('GATEWAY_CLIENT_ID')
 gateway_client_secret = os.environ.get('GATEWAY_CLIENT_SECRET')
 
-HPC_GATEWAY_URL = "http://127.0.0.1:5005/"
+HPCGATEWAY_URL = os.environ.get("HPCGATEWAY_URL")
 
 def relay(request: MessageBrokerRequestModel):
     """get request from broker, process the request so hpc app can understand it.
@@ -40,7 +37,7 @@ def relay(request: MessageBrokerRequestModel):
     
     endpoint = request.endpoint
     # endpoint = '/broker'    # test
-    abs_url = urljoin(HPC_GATEWAY_URL, endpoint)
+    abs_url = urljoin(HPCGATEWAY_URL, endpoint)
 
     # Use GET request method
     # TODO how I know it is GET??
@@ -67,7 +64,7 @@ def hpc_message_relayer(
     return response_message
 
 rpc_server = RpcServer(
-    host="staging.materials-marketplace.eu",
+    host=os.environ.get("MP_HOST_URL"),
     application_id=gateway_client_id,
     application_secret=gateway_client_secret,
     message_handler=hpc_message_relayer,

@@ -50,6 +50,7 @@ f7t_client = f7t.Firecrest(
     authorization=hardcode,
 )
 
+MACHINE = os.environ.get("HPC_MACHINE_NAME")
 EXEC_HOME_FOLDER = os.environ.get("EXEC_HOME_FOLDER")
 
 def allowed_file(filename):
@@ -115,54 +116,25 @@ def dbtest():
     user_get = User().get_by_email(email=email)
     return jsonify(user_get=user_get, user=user), 200
 
-@app.route("/login/")
-def frontend():
-    return render_template('index.html')
 
-@app.route("/resource-request/", methods=["POST"])
-def resource_request():
-    return 'request sent', 200
-
-@app.route("/userinfo/", methods=["GET"])
+@app.route("/user/", methods=["GET"])
 @token_required
-def get_userinfo(current_user):
+def get_user(current_user):
     user = User().get_by_email(current_user['email'])
     if user:
-        resp = {
-            'db_user': user,
-            'marketplace_user': current_user,
-        }
+        return jsonify(
+            user=user,
+            message=f"DB user {user} with repo {email2repo(current_user['email'])}",
+            mp_user=current_user,
+        ), 200
     else:
-        resp = {
-            'db_user': 'NOT AVAILABLE',
-            'marketplace_user': current_user,
-        }
-    
-    return resp, 200
+        return jsonify(
+            error=f'User {current_user} not registered.',
+        ), 401
 
-@app.route('/doregister', methods=['POST'])
-def doregister():
-    access_token = request.form['access_token']
-    headers = {
-        "Accept": "application/json",
-        "User-Agent": "HPC-app",
-        "Authorization": f"Bearer {access_token}",
-    }
-    resp = requests.get(
-        f'{request.url_root}/register/',
-        headers=headers,
-        verify=None,
-    )
-    resp, status_code = resp.json(), resp.status_code
-    if status_code < 300:
-        return resp['message'], status_code
-    else:
-        return resp['error'], status_code
-
-
-@app.route("/register/", methods=["GET"])
+@app.route("/user/", methods=["POST"])
 @token_required
-def register(current_user):
+def create_user(current_user):
     try:
         email = current_user['email']
         name = current_user['name']
@@ -171,31 +143,33 @@ def register(current_user):
             # user name and email validate
             user = User().create(name=name, email=email)
         except Exception as e:
-            return {
-                'error': 'failed to create user in DB.'
-            }, 500
+            return jsonify(
+                error='failed to create user in DB.'
+            ), 500
             
         # user are created or aready exist (None return from create method)
         if user:
             # create the repository for user to store file
             repo = email2repo(email)
-            f7t_client.mkdir(target_path=os.path.join(app.config['ROOT_FOLDER'], repo))
+            repo_path = os.path.join(os.environ.get("EXEC_HOME_FOLDER"), repo)
+            app.logger.debug(f"Will create repo at {repo_path}")
+            app.logger.debug(f"machine={MACHINE}, path={repo_path}")
+            f7t_client.mkdir(machine=MACHINE, target_path=repo_path)
             
             # New db user created
-            resp = {
-                'message': 'New database and repository are created.',
-                'data': {
-                    'name': name,
-                    'email': email,
-                    '_id': user['_id']
-                }
-            } 
-            return resp, 200
+            return jsonify(
+                message='New database and repository are created.',
+                name=name,
+                email=email,
+                id=user['_id'],
+            ), 200
+
         else:
              # Already exist in DB
-            return {
-                'message': 'Already registered in database.'
-            }, 200
+            user = User().get_by_email(email=email)
+            return jsonify(
+                message=f'User {user} already registered in database.',
+            ), 200
     except Exception as e:    
         return {
             "error": "Something went wrong",
