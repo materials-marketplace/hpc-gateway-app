@@ -56,6 +56,17 @@ class Jobs:
         
         return job
     
+    def update(self, jobid, state):
+        data = {'state': state}
+        job = db.jobs.update_one(
+            {"_id": bson.ObjectId(jobid)},
+            {
+                "$set": data
+            }
+        )
+        job = self.get_by_id(jobid)
+        return job
+    
     def get_joblist_by_userid(self, userid):
         """Get all jobs created by a user return a list of jobid belong to this user"""
         jobs = db.jobs.find({"userid": userid})

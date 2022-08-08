@@ -269,3 +269,127 @@
 2022-08-07T12:00:57,723 140084703647488 [Thread-3] DEBUG    [connectionpool.py:456] https://staging.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 214
 2022-08-07T12:00:57,738 140084703647488 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 12:00:57] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
 2022-08-07T12:00:57,749 140084703647488 [Thread-4] INFO     [_internal.py:224] 172.26.0.1 - - [07/Aug/2022 12:00:57] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:24:41,747 140162681177920 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:24:41,884 140162681177920 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:24:42,220 140469103748928 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:24:42,221 140469103748928 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:30:20,177 139958555694912 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:30:20,178 139958555694912 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:30:20,554 140326903744320 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:30:20,555 140326903744320 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:34:24,152 140500269291328 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:34:24,153 140500269291328 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:34:24,522 139870736598848 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:34:24,523 139870736598848 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:34:52,789 140494936401728 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.4:5253 (Press CTRL+C to quit)
+2022-08-08T08:34:52,790 140494936401728 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:34:53,146 140415226967872 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:34:53,146 140415226967872 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 442-609-239
+2022-08-08T08:35:11,322 140289072039744 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.4:5253 (Press CTRL+C to quit)
+2022-08-08T08:35:11,323 140289072039744 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:35:11,703 139691253905216 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:35:11,703 139691253905216 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 442-609-239
+2022-08-08T08:36:55,590 140105522333504 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:36:55,591 140105522333504 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:36:55,924 139659416033088 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:36:55,925 139659416033088 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:37:23,199 140312954652480 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:37:23,200 140312954652480 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:37:23,532 140526524188480 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:37:23,532 140526524188480 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:39:27,886 140526462850816 [Thread-2] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:39:27] "GET /dbtest HTTP/1.1" 200 -
+2022-08-08T08:39:37,2 140526462850816 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:39:37] "GET /broker HTTP/1.1" 200 -
+2022-08-08T08:39:37,12 140526462850816 [Thread-4] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 192.168.220.21:8000
+2022-08-08T08:39:37,38 140526462850816 [Thread-4] DEBUG    [connectionpool.py:456] http://192.168.220.21:8000 "GET /status/parameters HTTP/1.1" 200 862
+2022-08-08T08:39:37,40 140526462850816 [Thread-4] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:39:37] "GET /f7ttest HTTP/1.1" 200 -
+2022-08-08T08:39:51,509 140526462850816 [Thread-5] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:39:51] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-08T08:39:51,519 140526462850816 [Thread-6] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-08T08:39:51,538 140526462850816 [Thread-6] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:39:51] "[35m[1mGET /user/ HTTP/1.1[0m" 500 -
+2022-08-08T08:39:51,559 140526462850816 [Thread-7] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:39:51] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:40:52,417 140526462850816 [Thread-8] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:40:52] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-08T08:40:52,427 140526462850816 [Thread-9] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): staging.materials-marketplace.eu:443
+2022-08-08T08:40:52,438 140526462850816 [Thread-9] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:40:52] "[35m[1mGET /user/ HTTP/1.1[0m" 500 -
+2022-08-08T08:40:52,452 140526462850816 [Thread-10] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:40:52] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:43:12,231 140205247670080 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:43:12,232 140205247670080 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:43:12,577 139958474237760 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:43:12,577 139958474237760 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:43:19,257 139958211569408 [Thread-2] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:43:19] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-08T08:43:19,265 139958211569408 [Thread-3] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:43:19,304 139958211569408 [Thread-3] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:43:19,313 139958211569408 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:43:19] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-08T08:43:19,326 139958211569408 [Thread-4] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:43:19] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:44:32,173 139958211569408 [Thread-5] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:44:32] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-08T08:44:32,183 139958211569408 [Thread-6] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:44:32,208 139958211569408 [Thread-6] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:44:32,212 139958211569408 [Thread-6] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:44:32] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-08T08:44:32,229 139958211569408 [Thread-7] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:44:32] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:45:06,243 139958211569408 [Thread-8] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:45:06] "[32mGET /user HTTP/1.1[0m" 308 -
+2022-08-08T08:45:06,252 139958211569408 [Thread-9] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:45:06,273 139958211569408 [Thread-9] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:45:06,276 139958211569408 [Thread-9] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:45:06] "[31m[1mGET /user/ HTTP/1.1[0m" 401 -
+2022-08-08T08:45:06,290 139958211569408 [Thread-10] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:45:06] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:46:45,470 140656749602624 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:46:45,471 140656749602624 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:46:45,831 140202632755008 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:46:45,832 140202632755008 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:46:47,836 140202362271488 [Thread-2] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:46:47,863 140202362271488 [Thread-2] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:46:47,870 140202362271488 [Thread-2] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:46:47] "[31m[1mGET /user HTTP/1.1[0m" 401 -
+2022-08-08T08:46:47,884 140202362271488 [Thread-3] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:46:47,920 140202362271488 [Thread-3] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:46:47,966 140202362271488 [Thread-3] DEBUG    [app.py:155] Will create repo at /home/jyu/firecrest/jusong_yu
+2022-08-08T08:46:47,966 140202362271488 [Thread-3] DEBUG    [app.py:156] machine=cluster, path=/home/jyu/firecrest/jusong_yu
+2022-08-08T08:46:47,971 140202362271488 [Thread-3] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 192.168.220.21:8000
+2022-08-08T08:46:48,523 140202362271488 [Thread-3] DEBUG    [connectionpool.py:456] http://192.168.220.21:8000 "POST /utilities/mkdir HTTP/1.1" 400 48
+2022-08-08T08:46:48,526 140202362271488 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:46:48] "[35m[1mPOST /user HTTP/1.1[0m" 500 -
+2022-08-08T08:47:54,434 140202362271488 [Thread-4] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:47:54,459 140202362271488 [Thread-4] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:47:54,462 140202362271488 [Thread-4] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:47:54] "GET /user HTTP/1.1" 200 -
+2022-08-08T08:47:54,470 140202362271488 [Thread-5] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:47:54,487 140202362271488 [Thread-5] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:47:54,490 140202362271488 [Thread-5] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:47:54] "POST /user HTTP/1.1" 200 -
+2022-08-08T08:49:51,269 140007676364608 [MainThread] INFO     [_internal.py:224]  * Running on all addresses (0.0.0.0)
+   WARNING: This is a development server. Do not use it in a production deployment.
+ * Running on http://127.0.0.1:5253
+ * Running on http://172.26.0.3:5253 (Press CTRL+C to quit)
+2022-08-08T08:49:51,270 140007676364608 [MainThread] INFO     [_internal.py:224]  * Restarting with stat
+2022-08-08T08:49:51,627 140018677905216 [MainThread] WARNING  [_internal.py:224]  * Debugger is active!
+2022-08-08T08:49:51,628 140018677905216 [MainThread] INFO     [_internal.py:224]  * Debugger PIN: 696-999-036
+2022-08-08T08:49:55,913 140018408482560 [Thread-2] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:49:55,938 140018408482560 [Thread-2] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:49:55,944 140018408482560 [Thread-2] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:49:55] "[31m[1mGET /user HTTP/1.1[0m" 401 -
+2022-08-08T08:49:55,953 140018408482560 [Thread-3] DEBUG    [connectionpool.py:1003] Starting new HTTPS connection (1): www.materials-marketplace.eu:443
+2022-08-08T08:49:55,972 140018408482560 [Thread-3] DEBUG    [connectionpool.py:456] https://www.materials-marketplace.eu:443 "GET /auth/realms/marketplace/protocol/openid-connect/userinfo HTTP/1.1" 200 215
+2022-08-08T08:49:56,9 140018408482560 [Thread-3] DEBUG    [app.py:155] Will create repo at /home/jyu/firecrest/jusong_yu
+2022-08-08T08:49:56,10 140018408482560 [Thread-3] DEBUG    [app.py:156] machine=cluster, path=/home/jyu/firecrest/jusong_yu
+2022-08-08T08:49:56,11 140018408482560 [Thread-3] DEBUG    [connectionpool.py:228] Starting new HTTP connection (1): 192.168.220.21:8000
+2022-08-08T08:49:56,572 140018408482560 [Thread-3] DEBUG    [connectionpool.py:456] http://192.168.220.21:8000 "POST /utilities/mkdir HTTP/1.1" 201 76
+2022-08-08T08:49:56,575 140018408482560 [Thread-3] INFO     [_internal.py:224] 172.26.0.1 - - [08/Aug/2022 08:49:56] "POST /user HTTP/1.1" 200 -

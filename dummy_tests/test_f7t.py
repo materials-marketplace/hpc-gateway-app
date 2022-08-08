@@ -29,11 +29,11 @@ client = f7t.Firecrest(
 )
 
 try:
-    # parameters = client.parameters()
-    # print(f"Firecrest parameters: {parameters}")
-    # print(client.list_files(machine='cluster', target_path='/home/jyu'))
-    print(client.mkdir(machine='cluster', target_path='/home/jyu/thmoo'))
-    # print(client.poll(machine='cluster'))
+    parameters = client.parameters()
+    print(f"Firecrest parameters: {parameters}")
+    print(client.list_files(machine='cluster', target_path='/home/jyu'))
+    # print(client.mkdir(machine='cluster', target_path='/home/jyu/thmoo'))
+    print(client.poll(machine='cluster'))
 except f7t.FirecrestException as e:
     # When the error comes from the responses to a firecrest request you will get a
     # `FirecrestException` and from this you can examine the http responses yourself

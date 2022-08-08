@@ -1,3 +1,4 @@
+from email import message
 import os
 import io
 import threading
@@ -117,7 +118,7 @@ def dbtest():
     return jsonify(user_get=user_get, user=user), 200
 
 
-@app.route("/user/", methods=["GET"])
+@app.route("/user", methods=["GET"])
 @token_required
 def get_user(current_user):
     user = User().get_by_email(current_user['email'])
@@ -132,7 +133,7 @@ def get_user(current_user):
             error=f'User {current_user} not registered.',
         ), 401
 
-@app.route("/user/", methods=["POST"])
+@app.route("/user", methods=["POST"])
 @token_required
 def create_user(current_user):
     try:
@@ -151,7 +152,7 @@ def create_user(current_user):
         if user:
             # create the repository for user to store file
             repo = email2repo(email)
-            repo_path = os.path.join(os.environ.get("EXEC_HOME_FOLDER"), repo)
+            repo_path = os.path.join(EXEC_HOME_FOLDER, repo)
             app.logger.debug(f"Will create repo at {repo_path}")
             app.logger.debug(f"machine={MACHINE}, path={repo_path}")
             f7t_client.mkdir(machine=MACHINE, target_path=repo_path)
@@ -188,18 +189,18 @@ def create_job(current_user):
     resourceid = str(uuid.uuid4())
     
     try:
-        target_path = os.path.join(app.config['ROOT_FOLDER'], repo, resourceid)
-        f7t_client.mkdir(target_path=target_path)
+        target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
+        f7t_client.mkdir(machine=MACHINE, target_path=target_path)
     except Exception as e:
-        return {
-            "function": 'create_job',
-            "error": f"unable to mkdir {target_path}",
-            "message": str(e)
-        }, 500
+        return jsonify(
+            entry_point="create_job",
+            error=f"unable to mkdir {target_path}",
+            error_message=str(e),
+        ), 500
     else:
-        return {
-            'resourceid': resourceid,
-        }, 200
+        return jsonify(
+            resourceid=resourceid,
+        ), 200
 
 @app.route("/jobs/run/<resourceid>", methods=["POST"])
 @token_required
@@ -207,12 +208,16 @@ def run_job(current_user, resourceid):
     """Submit job from the folder and return jobid"""
     repo = email2repo(current_user['email'])
     
-    workdir = os.path.join(ROOT_FOLDER, repo, resourceid)
+    workdir = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
     
     script_path = os.path.join(workdir, 'submit.sh')
-    # TODO: check (error return code) the job script exist
+    if 'submit.sh' not in f7t_client.list_files(machine=MACHINE, target_path=workdir):
+        return jsonify(
+            error="job script 'submit.sh' not uploaded yet."
+        )
+        
     try:
-        resp = f7t_client.submit(job_script=script_path)
+        resp = f7t_client.submit(machine=MACHINE, job_script=script_path, local_file=False)
         user = User().get_by_email(current_user['email'])
         userid = user['_id']
         jobid = resp.get('jobid')
@@ -222,14 +227,14 @@ def run_job(current_user, resourceid):
         resp['jobid'] = job['jobid']
         resp['resourceid'] = job['resourceid']
         
+        return resp, 200
+        
     except Exception as e:
         return {
             "function": 'submit',
             "error": "Something went wrong",
             "message": str(e)
         }, 500
-        
-    return resp, 200
 
 # still use resourceid for job manipulation it will map to the jobid internally
 @app.route("/jobs/cancel/<resourceid>", methods=["POST"])
@@ -244,8 +249,10 @@ def cancel_job(current_user, resourceid):
         app.logger.debug(userid)
         app.logger.debug(jobid)
         
-        resp = f7t_client.cancel(jobid=jobid)
-        # TODO update the state of job entity.
+        resp = f7t_client.cancel(machine=MACHINE, jobid=jobid)
+        
+        # update the state of job entity in db, state to cancel.
+        Jobs.update(jobid=jobid, state='cancel')
         
     except Exception as e:
         return {
@@ -253,8 +260,8 @@ def cancel_job(current_user, resourceid):
             "error": "Something went wrong",
             "message": str(e)
         }, 500
-        
-    return resp, 200
+    else:    
+        return resp, 200
 
 @app.route("/jobs/delete/<resourceid>", methods=["DELETE"])
 @token_required
@@ -274,7 +281,7 @@ def delete_job(current_user, resourceid):
         # simply delete DB entity from the list, no matter how is the job state.
         # Need to added in future that job must not in running states first. TODO.
         r = Jobs().delete(jobid=jobid)
-        print(r)
+        
     except Exception as e:
         return {
             "function": 'delete_job',
@@ -300,7 +307,7 @@ def list_jobs(current_user):
         return f"no jobs in list of user {user['name']}", 400
         
     try:
-        fresp = f7t_client.poll(jobs=jobs)
+        fresp = f7t_client.poll(machine=MACHINE, jobs=jobs)
     except Exception as e:
         raise e
     
@@ -318,12 +325,12 @@ def download_remote(current_user, resourceid):
     
     data = request.json
     filename = data.get('filename')
-    source_path = os.path.join(ROOT_FOLDER, repo, resourceid, filename)
+    source_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
     app.logger.debug(source_path)
     binary_stream = io.BytesIO()
     
     try:
-        f7t_client.simple_download(source_path=source_path, target_path=binary_stream)
+        f7t_client.simple_download(machine=MACHINE, source_path=source_path, target_path=binary_stream)
 
         download_name = os.path.basename(filename)
         binary_stream.seek(0) # buffer position from start
@@ -338,29 +345,29 @@ def download_remote(current_user, resourceid):
 def list_remote(current_user, resourceid):
     """
     list the remote files of resourceid folder from the cluster.
-    :param path: path string relative to the parent ROOT_PATH=`/scratch/snx3000/jyu/firecrest/`
+    :param path: path string relative to the parent EXEC_HOME_FOLDER
     :return: list of files.
     """
     repo = email2repo(current_user['email'])
     
     data = request.json or {}
     filename = data.get('filename', '.')
-    target_path = os.path.join(ROOT_FOLDER, repo, resourceid, filename)
+    target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
     
     try:
-        resp = f7t_client.list_files(target_path=target_path)
+        resp = f7t_client.list_files(machine=MACHINE, target_path=target_path)
     except Exception as exc:
         return {"message": f"Failed with {exc}"}, 402
     else:
-        resp = {'output': resp}
-    
-        return resp, 200
+        return jsonify(
+            output=resp,
+        ), 200
 
 @app.route("/upload/<resourceid>", methods=["PUT"])
 @token_required
 def upload_remote(current_user, resourceid):
     """
-    Upload the file to the cluster. to folder ROOT_PATH=`/scratch/snx3000/jyu/firecrest/`
+    Upload the file to the cluster. to folder EXEC_HOME_FOLDER
     """
     repo = email2repo(current_user['email'])
     
@@ -373,13 +380,18 @@ def upload_remote(current_user, resourceid):
         }), 403
         
     file = request.files['file']
-    target_path = os.path.join(app.config['ROOT_FOLDER'], repo, resourceid)
+    target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
     
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         binary_stream = io.BytesIO(file.read())
         
-        resp = f7t_client.simple_upload(binary_stream, target_path, filename)
+        resp = f7t_client.simple_upload(
+            machine=MACHINE, 
+            binary_stream=binary_stream, 
+            target_path=target_path, 
+            # filename=filename,    problem with F7T API for this.
+        )
     
         return resp, 200
         
