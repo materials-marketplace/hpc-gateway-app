@@ -1,38 +1,36 @@
-from firecrest import ClientCredentialsAuthorization
-from firecrest import Firecrest as CscsFirecrest
+import firecrest as f7t
 import requests
 import os
 from contextlib import nullcontext
-from dotenv import load_dotenv
 
-load_dotenv()
-
+# For CSCS daint only
 # Configuration parameters for the Authorization Object
 client_id = os.environ.get('FIRECREST_CLIENT_ID')
 client_secret = os.environ.get('FIRECREST_CLIENT_SECRET')
 token_uri = "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
 
 # Create an authorization account object with Client Credentials authorization grant
-keycloak = ClientCredentialsAuthorization(
-    client_id, client_secret, token_uri, debug=False
+keycloak = f7t.ClientCredentialsAuth(
+    client_id, client_secret, token_uri
 )
 
-
-class MyKeycloakCCAccount:
-    def __init__(self):
-        pass
-
-    @keycloak.account_login
+# Create an authorization object with Client Credentials authorization grant
+class HardCodeTokenAuth:
+    
+    def __init__(self, token):
+        self._token = token
+        
     def get_access_token(self):
-        return keycloak.get_access_token()
-
-class Firecrest(CscsFirecrest):
+        return self._token
+    
+# This is not used but directly call
+class Firecrest(f7t.Firecrest):
     
     _MACHINE = 'daint'
     _SYSTEM = 'daint'
     
     def __init__(self, firecrest_url, verify=None, sa_role="firecrest-sa"):
-        super().__init__(firecrest_url, authorization=MyKeycloakCCAccount())
+        super().__init__(firecrest_url, authorization=keycloak)
     
     def heartbeat(self):
         """Returns information about a system as the heartbeat check.

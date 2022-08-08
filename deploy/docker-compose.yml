@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+
+  hpc-gateway:
+    restart: always
+    depends_on:
+      - mongo
+    build:
+      context: ..
+      dockerfile: deploy/base/Dockerfile
+      args:
+        CONFIG_FILE: config.json
+    env_file:
+      - ./common.env
+    volumes:
+      - './logs/hpc-gateway:/var/log:delegated'
+    ports:
+      - '5253:5253'
+    networks:
+      - f7t
+      - hpcgw
+
+  rpc-server:
+    restart: always
+    depends_on: 
+      - hpc-gateway
+    build:
+      context: ..
+      dockerfile: deploy/broker/Dockerfile
+    env_file:
+      - ./common.env
+    volumes:
+      - './logs/broker:/var/log:delegated'
+    networks:
+      - hpcgw
+
+  mongo:
+    restart: always
+    image: mongo:4
+    volumes:
+      - '/home/jyu/gwdb:/data/db'
+    networks:
+      - hpcgw
+
+networks:
+  f7t:
+    external: true
+  hpcgw:
