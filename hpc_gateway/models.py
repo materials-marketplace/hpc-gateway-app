@@ -3,11 +3,7 @@ import bson, os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-load_dotenv()
-
-# The DB server is held on https://cloud.mongodb.com/v2
-# DATABASE_URL=f'mongodb+srv://mphpc:{os.environ.get("password")}@mongodb-heroku-mp-hpc-a.dzddt.mongodb.net/hpcdb?retryWrites=true&w=majority'
-# print(DATABASE_URL)
+# The CSCS HPC-GW test deploymet DB server is held on https://cloud.mongodb.com/v2
 DATABASE_URL=os.environ.get("HPCGATEWAY_MONGO_URL")
 client = MongoClient(DATABASE_URL)
 db = client.f7t

@@ -1,27 +1,19 @@
-from email import message
 import os
 import io
-import sys
 import threading
 import uuid
 import logging
 from logging.handlers import TimedRotatingFileHandler
-import requests
 
 from flask import Flask, request, jsonify, g
 from flask import send_file
-from flask import Flask, flash, request, render_template
+from flask import Flask, flash, request
 from werkzeug.utils import secure_filename
 import firecrest as f7t
 
 from hpc_gateway.f7t import HardCodeTokenAuth
 from hpc_gateway.models import Jobs, User
 from hpc_gateway.auth_middleware import token_required
-
-from dotenv import load_dotenv
-
-# # Only test need load_dotenv
-# load_dotenv("./deploy/common.env")
 
 # Checks if an environment variable injected to F7T is a valid True value
 # var <- object
@@ -38,22 +30,42 @@ def get_boolean_var(var):
 debug = get_boolean_var(os.environ.get("HPCGATEWAY_DEBUG_MODE", False))
 USE_SSL = get_boolean_var(os.environ.get("HPCGATEWAY_USE_SSL", False))
 
-# WHITE_LIST = ['jusong.yu@epfl.ch', 'andreas.aigner@dcs-computing.com', 'simon.adorf@epfl.ch']
 # Setup the client for the specific account
 # Create an authorization object with Client Credentials authorization grant
+
+F7T_TOKEN = os.environ.get("F7T_TOKEN", None)
+if F7T_TOKEN is not None:
+    # The IWM deployment
+    hardcode = HardCodeTokenAuth(
+        token=os.environ.get("F7T_TOKEN"),
+    )
+
+    # Setup the client for the specific account
+    f7t_client = f7t.Firecrest(
+        firecrest_url=os.environ.get("F7T_URL"), 
+        authorization=hardcode,
+    )
+
+    MACHINE = os.environ.get("HPC_MACHINE_NAME")
+    EXEC_HOME_FOLDER = os.environ.get("EXEC_HOME_FOLDER")
     
-hardcode = HardCodeTokenAuth(
-    token=os.environ.get("F7T_TOKEN"),
-)
+else:
+    F7T_TOKEN_URL = os.environ.get("F7T_TOKEN", None)
+    assert F7T_TOKEN_URL is not None, "F7T token or token url at least one provided."
+    
+    # Configuration parameters for the Authorization Object
+    client_id = os.environ.get("F7T_CLIENT_ID")
+    client_secret = os.environ.get("F7T_CLIENT_SECRET")
 
-# Setup the client for the specific account
-f7t_client = f7t.Firecrest(
-    firecrest_url=os.environ.get("F7T_URL"), 
-    authorization=hardcode,
-)
+    # Create an authorization object with Client Credentials authorization grant
+    keycloak = f7t.ClientCredentialsAuth(
+        client_id, client_secret, F7T_TOKEN_URL,
+    )
 
-MACHINE = os.environ.get("HPC_MACHINE_NAME")
-EXEC_HOME_FOLDER = os.environ.get("EXEC_HOME_FOLDER")
+    # Setup the client for the specific account
+    f7t_client = f7t.Firecrest(
+        firecrest_url=os.environ.get("F7T_URL"), authorization=keycloak
+    )
 
 def allowed_file(filename):
     # TODO check file size < 10 MB
@@ -420,7 +432,7 @@ def delete_remote(current_user, resourceid):
     
     data = request.json
     filename = data.get('filename')
-    target_path = os.path.join(ROOT_FOLDER, repo, resourceid, filename)
+    target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
     
     try:
         f7t_client.simple_delete(target_path=target_path)
