@@ -3,3 +3,4 @@ __pycache__
 .testuser
 app.info
 *.egg-info/
+deploy/logs/*

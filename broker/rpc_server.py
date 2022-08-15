@@ -62,7 +62,7 @@ def relay(request: MessageBrokerRequestModel):
             headers=headers,
             verify=None,
         )
-    elif endpoint == 'jobs/new/' or 'jobs/run/' in endpoint:
+    elif 'jobs/new' in endpoint or 'jobs/run' in endpoint:
         resp = requests.post(
             abs_url,
             params=params,
