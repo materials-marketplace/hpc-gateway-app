@@ -11,7 +11,7 @@ from flask import Flask, flash, request
 from werkzeug.utils import secure_filename
 import firecrest as f7t
 
-from hpc_gateway.f7t import HardCodeTokenAuth
+from hpc_gateway.f7t import HardCodeTokenAuth, Firecrest
 from hpc_gateway.models import Jobs, User
 from hpc_gateway.auth_middleware import token_required
 
@@ -29,6 +29,7 @@ def get_boolean_var(var):
 
 debug = get_boolean_var(os.environ.get("HPCGATEWAY_DEBUG_MODE", False))
 USE_SSL = get_boolean_var(os.environ.get("HPCGATEWAY_USE_SSL", False))
+FLASK_PORT = os.environ.get("FLASK_PORT", 5005)
 
 # Setup the client for the specific account
 # Create an authorization object with Client Credentials authorization grant
@@ -41,7 +42,7 @@ if F7T_TOKEN is not None:
     )
 
     # Setup the client for the specific account
-    f7t_client = f7t.Firecrest(
+    f7t_client = Firecrest(
         firecrest_url=os.environ.get("F7T_URL"), 
         authorization=hardcode,
     )
@@ -50,7 +51,7 @@ if F7T_TOKEN is not None:
     EXEC_HOME_FOLDER = os.environ.get("EXEC_HOME_FOLDER")
     
 else:
-    F7T_TOKEN_URL = os.environ.get("F7T_TOKEN", None)
+    F7T_TOKEN_URL = os.environ.get("F7T_TOKEN_URL", None)
     assert F7T_TOKEN_URL is not None, "F7T token or token url at least one provided."
     
     # Configuration parameters for the Authorization Object
@@ -63,9 +64,12 @@ else:
     )
 
     # Setup the client for the specific account
-    f7t_client = f7t.Firecrest(
+    f7t_client = Firecrest(
         firecrest_url=os.environ.get("F7T_URL"), authorization=keycloak
     )
+    
+    MACHINE = os.environ.get("HPC_MACHINE_NAME")
+    EXEC_HOME_FOLDER = os.environ.get("EXEC_HOME_FOLDER")
 
 def allowed_file(filename):
     # TODO check file size < 10 MB
@@ -409,14 +413,22 @@ def upload_remote(current_user, resourceid):
         filename = secure_filename(file.filename)
         binary_stream = io.BytesIO(file.read())
         
-        resp = f7t_client.simple_upload(
-            machine=MACHINE, 
-            binary_stream=binary_stream, 
-            target_path=target_path, 
-            # filename=filename,    problem with F7T API for this.
-        )
-    
-        return resp, 200
+        try:
+            f7t_client.simple_upload(
+                machine=MACHINE, 
+                source_path=binary_stream, 
+                target_path=target_path, 
+                filename=filename,
+            )
+        except Exception as exc:
+            return jsonify(
+                error="file upload failed.",
+                message=str(exc),
+            ), 401
+        else:
+            return jsonify(
+                    message=f"Upload {filename} to remote folder."
+                ), 200
         
 @app.route("/delete/<resourceid>", methods=["DELETE"])
 @token_required
@@ -493,6 +505,6 @@ if __name__ == "__main__":
     logging.getLogger('werkzeug').propagate = False
         
     if USE_SSL:
-        app.run(debug=debug, host='0.0.0.0', port=5253, ssl_context='adhoc')
+        app.run(debug=debug, host='0.0.0.0', port=FLASK_PORT, ssl_context='adhoc')
     else:
-        app.run(debug=debug, host='0.0.0.0', port=5253)
+        app.run(debug=debug, host='0.0.0.0', port=FLASK_PORT)
