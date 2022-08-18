@@ -1,12 +1,17 @@
 """Application Models"""
 import bson, os
-from dotenv import load_dotenv
 from pymongo import MongoClient
 
 # The CSCS HPC-GW test deploymet DB server is held on https://cloud.mongodb.com/v2
 DATABASE_URL=os.environ.get("HPCGATEWAY_MONGO_URL")
 client = MongoClient(DATABASE_URL)
-db = client.f7t
+
+if os.environ.get("F7T_TOKEN", None) is not None:
+    # The IWM deploy
+    db = client.iwm_hpc
+else:
+    # The CSCS deploy
+    db = client.cscs_hpc
 
 class Jobs:
     """Jobs Model

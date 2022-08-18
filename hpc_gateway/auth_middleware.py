@@ -1,17 +1,18 @@
 from functools import wraps
 import os
+import json
 from flask import request, jsonify
 import requests
 
 MP_USERINFO_URL = os.environ.get("MP_USERINFO_URL")
 
 # Need white list to prevent unknown users, we don't have purchase in action at the moment.
-if os.environ.get("F7T_TOKEN") is None:
-    WHITE_LIST = [
-        'jusong.yu@epfl.ch',
-        'andreas.aigner@dcs-computing.com', 
-        'simon.adorf@epfl.ch',
-    ]
+# this is inconvinient since have to redeploy to add account, should using another DB collection.
+# But since the white list is not required by IWM deployment, it is not urgent to implement that.
+WHITE_LIST = os.environ.get("HPCGATEWAY_WHITE_LIST", None)
+if WHITE_LIST is not None:
+    # read from ENV
+    WHITE_LIST = json.loads(WHITE_LIST)
 
 def token_required(f):
     @wraps(f)

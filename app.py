@@ -163,6 +163,8 @@ def get_user(current_user):
 @app.route("/user", methods=["POST"])
 @token_required
 def create_user(current_user):
+    # This endpoint is not needed for IWM deployment and has no capability correspond
+    # It needed to be moved to token_required check for user in db and user repo.
     try:
         email = current_user['email']
         name = current_user['name']

@@ -8,9 +8,47 @@
 
 ## Interacte with HPC through MarketPlace proxy
 
-For demo jupyter notebook and the SDK of using this app please check [hpc-sdk](https://github.com/unkcpz/hpc-sdk)
+### Materials Cloud deployment
 
-## How to deploy the infracstructures and run hpc-app on MarketPlace platform for MarketPlace HPC.
+Since it deployed using Materials Cloud CSCS resources provided by EPFL, it is only for test purpose and MarketPlace users who what to use it need to contact Jusong Yu @unkpcz (jusong.yu@epfl.ch) to add your MarketPlace account to the whitelist.
+
+## How to deploy app to heroku (for Materials Cloud deployment)
+
+Set all the ENV variables in heroku dashbooard. Check `cscs.env.template` for all variables needed.
+
+Install the Heroku CLI
+Download and install the Heroku CLI.
+
+If you haven't already, log in to your Heroku account and follow the prompts to create a new SSH public key.
+
+```
+$ heroku login --interactive
+```
+
+Clone the repository
+Use Git to clone mp-hpc's source code to your local machine.
+
+```
+$ heroku git:clone -a mp-hpc 
+$ cd mp-hpc
+```
+
+or in the repo add heroku remote repo to push
+
+```
+$ git remote add heroku https://git.heroku.com/mp-hpc.git
+```
+
+Deploy your changes
+Make some changes to the code you just cloned and deploy them to Heroku using Git.
+
+```
+$ git add .
+$ git commit -am "make it better"
+$ git push heroku master
+```
+
+## How to deploy the infracstructures and run hpc-app on IWM HPC.
 
 The firecrest on MarketPlace firecrest server need to be started. 
 Go to `firecrest/` folder of `hpc-fire` server and run `docker-compose up -d`. 
