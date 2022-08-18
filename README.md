@@ -13,13 +13,15 @@ https://materials-marketplace.readthedocs.io/en/latest/apps/registration.html
 
 ## Interacte with HPC through MarketPlace proxy
 
-### Materials Cloud deployment
+### Materials Cloud (CSCS) deployment
+
+The correspond HPC-Gateway app is https://www.materials-marketplace.eu/app/hpc-app (ID: `5fd66c68-50e9-474a-b55d-148777ae3efd`) deployed on production server.
 
 Since it deployed using Materials Cloud CSCS resources provided by EPFL, it is only for test purpose and MarketPlace users who what to use it need to contact Jusong Yu @unkpcz (jusong.yu@epfl.ch) to add your MarketPlace account to the whitelist.
 
-The following capabilities are supported:
+The following capabilities are supported and can be called by using [python-sdk](https://github.com/materials-marketplace/python-sdk).
 
-
+- 
 
 ## How to deploy app to heroku (for Materials Cloud deployment)
 

@@ -1,3 +1,4 @@
+from email import message
 import os
 import io
 import threading
@@ -474,11 +475,16 @@ def delete_remote(current_user, resourceid):
     target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
     
     try:
-        f7t_client.simple_delete(target_path=target_path)
-    except Exception as exc:
-        return {"message": f"Failed with {exc}"}, 402
+        f7t_client.simple_delete(machine=MACHINE, target_path=target_path)
+    except Exception as e:
+        return jsonify(
+            error=f"Delete remote file {filename} of repo {resourceid} failed",
+            message=str(e)
+        ), 402
     else:
-        return {"message": f"Delete the file {filename} from {resourceid}"}, 200
+        return jsonify(
+            message=f"Delete the remote file {filename} from {resourceid}",
+        ), 200
 
 
 @app.errorhandler(403)
