@@ -309,7 +309,10 @@ def cancel_job(current_user, resourceid):
             "message": str(e)
         }, 500
     else:    
-        return resp, 200
+        return jsonify(
+            func="cancel",
+            message=f"cancel jobid {jobid} of {resourceid}."
+        ), 200
 
 @app.route("/jobs/delete/<resourceid>", methods=["DELETE"])
 @token_required
