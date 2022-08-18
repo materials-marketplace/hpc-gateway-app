@@ -14,7 +14,7 @@ Since it deployed using Materials Cloud CSCS resources provided by EPFL, it is o
 
 ## How to deploy app to heroku (for Materials Cloud deployment)
 
-Set all the ENV variables in heroku dashbooard. Check `cscs.env.template` for all variables needed.
+Set all the ENV variables in heroku dashbooard (https://devcenter.heroku.com/articles/config-vars). Check `cscs.env.template` for all variables needed.
 
 Install the Heroku CLI
 Download and install the Heroku CLI.
