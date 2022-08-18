@@ -3,14 +3,23 @@
 ## Development server
 
 - Create a virtual environment, activate it and install the dependencies.
-- Run `flask run` to start the development server.
+- `pip install -U ".[dev]"`
+- Run `python app.py` to start the development server.
 - Navigate to http://localhost:5005/. The app will automatically reload if you change any of the source files.
+
+## Registry the app to MarketPlace
+
+https://materials-marketplace.readthedocs.io/en/latest/apps/registration.html
 
 ## Interacte with HPC through MarketPlace proxy
 
 ### Materials Cloud deployment
 
 Since it deployed using Materials Cloud CSCS resources provided by EPFL, it is only for test purpose and MarketPlace users who what to use it need to contact Jusong Yu @unkpcz (jusong.yu@epfl.ch) to add your MarketPlace account to the whitelist.
+
+The following capabilities are supported:
+
+
 
 ## How to deploy app to heroku (for Materials Cloud deployment)
 
@@ -50,10 +59,13 @@ $ git push heroku master
 
 ## How to deploy the infracstructures and run hpc-app on IWM HPC.
 
+### Firecrest deployment
 The firecrest on MarketPlace firecrest server need to be started. 
 Go to `firecrest/` folder of `hpc-fire` server and run `docker-compose up -d`. 
 The changes of firecrest deployment that needed on MarketPlace HPC can be found on https://github.com/unkcpz/firecrest/pull/1
 
+### HPC-GW app and rpc-broker server
+[.deploy/docker-compose.yml]
 Then need to start the hpc-app to communicate to the firecrest. 
 Since the hpc-app is in the private internal network, we use MarketPlace broker to talk to public network.
 Go to the hpc-app repo and run `python app.py` (WIP: using docker-compose to start so the dependencies are not needed).

@@ -333,12 +333,17 @@ def list_jobs(current_user):
     app.logger.debug(userid)
     app.logger.debug(jobs)
     if not jobs:
-        return f"no jobs in list of user {user['name']}", 400
+        return jsonify(
+            message=f"no jobs in list of user {user['name']}",    
+        ), 200
         
     try:
         fresp = f7t_client.poll(machine=MACHINE, jobs=jobs)
     except Exception as e:
-        raise e
+        return jsonify(
+            error=str(e),
+            message="poll jobs faild.",
+        )
     
     return fresp, 200
 
