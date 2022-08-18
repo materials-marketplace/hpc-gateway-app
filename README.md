@@ -1,6 +1,6 @@
-# Authentication with Flask and JWT
+# MarketPlace HPC Gateway app
 
-## Development server
+## Development and run locally
 
 - Create a virtual environment, activate it and install the dependencies.
 - `pip install -U ".[dev]"`
@@ -17,11 +17,37 @@ https://materials-marketplace.readthedocs.io/en/latest/apps/registration.html
 
 The correspond HPC-Gateway app is https://www.materials-marketplace.eu/app/hpc-app (ID: `5fd66c68-50e9-474a-b55d-148777ae3efd`) deployed on production server.
 
-Since it deployed using Materials Cloud CSCS resources provided by EPFL, it is only for test purpose and MarketPlace users who what to use it need to contact Jusong Yu @unkpcz (jusong.yu@epfl.ch) to add your MarketPlace account to the whitelist.
+Since it deployed using Materials Cloud CSCS resources provided by EPFL, it is only for test purpose and MarketPlace users who what to use it need to contact Jusong Yu @unkpcz (jusong.yu@epfl.ch) to add your MarketPlace account to the whitelist and then register your account by:
+
+```
+curl -X POST \
+   -H "Authorization:Bearer <put_your_token_here>" \
+   'https://mp-hpc.herokuapp.com/user'
+```
 
 The following capabilities are supported and can be called by using [python-sdk](https://github.com/materials-marketplace/python-sdk).
+Create a `hpc` instance with:
 
-- 
+python
+```
+from marketplace.app import MarketPlaceApp
+
+hpc = MarketPlaceApp(
+    client_id="5fd66c68-50e9-474a-b55d-148777ae3efd", # This is the HPC app.
+    access_token=<your_access_token>,
+)
+```
+
+- Check the availability of system: `hpc.heartbeat()`
+- Create a new calculation: `hpc.new_job()`, the resourceid will returned to list files on remote workdir, upload/downlead/delete files and the launch/delete job.
+- Upload file: `hpc.upload(resourceid=<resourceid>, source_path=<file_local_path>`.
+- Download file: `hpc.download(resourceid=<resourceid>, filename=<filename>`.
+- Delete file: `hpc.delete_file(resourceid=resourceid, filename=<filename>)`
+- List jobs: `hpc.list_jobs()`.
+- Launch job: `hpc.run_job(resourceid=<resourceid>)`
+- Delete job: `hpc.delete_job(resourceid=resourceid)`
+
+You can find a example from https://github.com/materials-marketplace/python-sdk/blob/main/examples/hpc_api.ipynb
 
 ## How to deploy app to heroku (for Materials Cloud deployment)
 
@@ -73,4 +99,4 @@ Since the hpc-app is in the private internal network, we use MarketPlace broker 
 Go to the hpc-app repo and run `python app.py` (WIP: using docker-compose to start so the dependencies are not needed).
 This will start the hpc-app and the `rpc-brocker` (should be optinonal for the hpc-app accessable deployed on public network). 
 
-© 2021 GitHub, Inc.
+© 2021-2022 GitHub, Inc.
