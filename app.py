@@ -240,7 +240,25 @@ def run_job(current_user, resourceid):
     workdir = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
     
     script_path = os.path.join(workdir, 'submit.sh')
-    if 'submit.sh' not in f7t_client.list_files(machine=MACHINE, target_path=workdir):
+    # get files in the folder
+    try:
+        output = f7t_client.list_files(machine=MACHINE, target_path=workdir)
+    except KeyError:
+        return jsonify(
+            func="list files before submission to check the job scripts.",
+            error=f"Something went wrong when retrive files in {resourceid}",
+            message=str(e),
+        ), 501
+    except Exception as e:
+        return jsonify(
+            func="list files before submission to check the job scripts.",
+            error=f"Something went wrong when retrive files in {resourceid}",
+            message=str(e),
+        ), 500
+    else:
+        files = [i["name"] for i in output]
+        
+    if 'submit.sh' not in files:
         return jsonify(
             error="job script 'submit.sh' not uploaded yet."
         )
@@ -250,7 +268,7 @@ def run_job(current_user, resourceid):
         user = User().get_by_email(current_user['email'])
         userid = user['_id']
         jobid = resp.get('jobid')
-        job = Jobs().create(userid=userid, jobid=jobid, resourceid=resourceid)
+        job = Jobs().create(userid=str(userid), jobid=str(jobid), resourceid=str(resourceid))
         
         resp['userid'] = job['userid']
         resp['jobid'] = job['jobid']
@@ -259,17 +277,17 @@ def run_job(current_user, resourceid):
         return resp, 200
         
     except Exception as e:
-        return {
-            "function": 'submit',
-            "error": "Something went wrong",
-            "message": str(e)
-        }, 500
+        return jsonify(
+            func="submit job",
+            error="Something went wrong in submission",
+            message=str(e),
+        ), 500
 
 # still use resourceid for job manipulation it will map to the jobid internally
 @app.route("/jobs/cancel/<resourceid>", methods=["POST"])
 @token_required
 def cancel_job(current_user, resourceid):
-    """Submit job from the folder and return jobid"""
+    """cancel job from the folder and return jobid"""
     try:
         user = User().get_by_email(current_user['email'])
         userid = user['_id']
@@ -278,10 +296,10 @@ def cancel_job(current_user, resourceid):
         app.logger.debug(userid)
         app.logger.debug(jobid)
         
-        resp = f7t_client.cancel(machine=MACHINE, jobid=jobid)
+        # resp = f7t_client.cancel(machine=MACHINE, job_id=jobid)
         
         # update the state of job entity in db, state to cancel.
-        Jobs.update(jobid=jobid, state='cancel')
+        Jobs().update(jobid=jobid, state='cancel')
         
     except Exception as e:
         return {
@@ -297,7 +315,7 @@ def cancel_job(current_user, resourceid):
 def delete_job(current_user, resourceid):
     """Delete job from list jobid DB. This will not actually delete the
     remote folder but simply remove the entity from DB list to unlink. 
-    The remote folder in the /scratch should be cleanup in period by setting in HPC.
+    The remote folder in the /scratch will be cleanup in period by setting in HPC.
     """
     try:
         user = User().get_by_email(current_user['email'])
@@ -338,14 +356,16 @@ def list_jobs(current_user):
         ), 200
         
     try:
-        fresp = f7t_client.poll(machine=MACHINE, jobs=jobs)
+        jobs = f7t_client.poll(machine=MACHINE, jobs=jobs)
     except Exception as e:
         return jsonify(
             error=str(e),
             message="poll jobs faild.",
         )
     
-    return fresp, 200
+    return jsonify(
+        jobs=jobs,
+    ), 200
 
 @app.route("/download/<resourceid>", methods=["GET"])
 @token_required

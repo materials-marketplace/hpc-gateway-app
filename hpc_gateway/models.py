@@ -31,7 +31,7 @@ class Jobs:
         
         return job
 
-    def create(self, userid, jobid, resourceid):
+    def create(self, userid: str, jobid: str, resourceid: str):
         """Create a new job in DB"""
         job = self.get_by_jobid(jobid)
         if job:
