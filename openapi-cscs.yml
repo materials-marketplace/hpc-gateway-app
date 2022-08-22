@@ -22,7 +22,18 @@ info:
           productId:
 servers:
   - url: https://mp-hpc.herokuapp.com
-  # - url: https://staging.materials-marketplace.eu/message-broker
+
+tags:
+  - name: FrontPage
+    description: Provides functionalities for web applications.
+  - name: System
+    description: Provides functionalities for operability of applications.
+  - name: DataSource
+    description: Provides functionalities for data fetching applications.
+  - name: DataSink
+    description: Provides functionalities for data storing applications.
+  - name: Transformation
+    description: Provides functionalities for data manipulation applications.
 
 paths:
 # Administrative paths
@@ -30,6 +41,8 @@ paths:
     get:
       security:
         - bearerAuth: []
+      tags:
+        - System
       description: To check if an application is alive
       operationId: heartbeat
       responses:
@@ -47,25 +60,27 @@ paths:
     get:
       security:
         - bearerAuth: []
-      description: Get the List of jobs
-      operationId: getTransformationList
+      tags:
+        - Transformation
+      description: Get the status of a Transformation
+      operationId: getTransformationStatus
+      parameters:
+        - in: path
+          name: transformationId
+          schema:
+            type: string
+          required: true
       responses:
-        '200':
+        "200":
           description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-                  example: ['transformationID-1','transformationID-2','...']
-        '404':
-          description: Not found  
-
+        "404":
+          description: Not found
   /login/:
     get:
       security:
         - bearerAuth: []
+      tags:
+        - FrontPage
       description: Goes to login page of the application
       operationId: frontend
       responses:
@@ -78,6 +93,8 @@ paths:
     post:
       security:
         - bearerAuth: []
+      tags:
+        - Transformation
       description: Initialize a Transformation
       operationId: newTransformation
       responses:
@@ -102,6 +119,8 @@ paths:
     post:
       security:
         - bearerAuth: []
+      tags:
+        - Transformation
       description: Start execution of a Transformation
       operationId: startTransformation
       parameters: 
@@ -120,6 +139,8 @@ paths:
     post:
       security:
         - bearerAuth: []
+      tags:
+        - Transformation
       description: cancel execution of a Transformation
       operationId: stopTransformation
       parameters: 
@@ -138,6 +159,8 @@ paths:
     post:
       security:
         - bearerAuth: []
+      tags:
+        - Transformation
       description: delete a Transformation
       operationId: deleteTransformation
       parameters: 
@@ -156,6 +179,8 @@ paths:
     get:
       security:
         - bearerAuth: []
+      tags:
+        - DataSource
       description: Fetches a particular Dataset
       operationId: getDataset
       parameters:
@@ -180,6 +205,8 @@ paths:
     put:
       security:
         - bearerAuth: []
+      tags:
+        - DataSink
       description: Edit a dataset
       operationId: updateDataset
       parameters:
@@ -200,6 +227,8 @@ paths:
     delete:
       security:
         - bearerAuth: []
+      tags:
+        - DataSink
       description: Delete a dataset
       operationId: deleteDataset
       parameters:

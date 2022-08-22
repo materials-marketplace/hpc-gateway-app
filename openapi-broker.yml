@@ -4,7 +4,7 @@ openapi: 3.0.0
 info:
     title: HPC gateway (broker)
     description: Access to HPC through firecrest (inside FW)
-    version: 0.1.0
+    version: 0.2.0
     x-application-name: HPC gateway (broker)
     x-oauth-client:
         client-id:
@@ -23,12 +23,26 @@ info:
 servers:
   - url: https://staging.materials-marketplace.eu/message-broker
 
+tags:
+  - name: FrontPage
+    description: Provides functionalities for web applications.
+  - name: System
+    description: Provides functionalities for operability of applications.
+  - name: DataSource
+    description: Provides functionalities for data fetching applications.
+  - name: DataSink
+    description: Provides functionalities for data storing applications.
+  - name: Transformation
+    description: Provides functionalities for data manipulation applications.
+
 paths:
 # Administrative paths
   /:
     get:
       security:
         - bearerAuth: []
+      tags:
+        - System
       description: To check if an application is alive
       operationId: heartbeat
       responses:
@@ -46,25 +60,27 @@ paths:
     get:
       security:
         - bearerAuth: []
-      description: Get the List of jobs
-      operationId: getTransformationList
+      tags:
+        - Transformation
+      description: Get the status of a Transformation
+      operationId: getTransformationStatus
+      parameters:
+        - in: path
+          name: transformationId
+          schema:
+            type: string
+          required: true
       responses:
-        '200':
+        "200":
           description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: string
-                  example: ['transformationID-1','transformationID-2','...']
-        '404':
-          description: Not found  
-
+        "404":
+          description: Not found
   /login/:
     get:
       security:
         - bearerAuth: []
+      tags:
+        - FrontPage
       description: Goes to login page of the application
       operationId: frontend
       responses:
@@ -77,13 +93,15 @@ paths:
     post:
       security:
         - bearerAuth: []
+      tags:
+        - Transformation
       description: Initialize a Transformation
       operationId: newTransformation
       responses:
         '200':
           description: Success
           content:
-            resourceId:
+            resourceid:
               schema:
                 type: string
                 example: "3e22541c-a95e-4443-8cdc-0866171d343b"
@@ -97,15 +115,17 @@ paths:
         '404':
           description: Not found
 
-  /jobs/run/{resource}:
+  /jobs/run/{resourceid}:
     post:
       security:
         - bearerAuth: []
+      tags:
+        - Transformation
       description: Start execution of a Transformation
       operationId: startTransformation
       parameters: 
         - in: path
-          name: resource
+          name: resourceid
           schema: 
             type: string
           required: true
@@ -115,15 +135,57 @@ paths:
         '404':
           description: Not found
 
-  /download/{resource}:
+  /jobs/cancel/{resourceid}:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transformation
+      description: cancel execution of a Transformation
+      operationId: stopTransformation
+      parameters: 
+        - in: path
+          name: resourceid
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not found
+
+  /jobs/delete/{resourceid}:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Transformation
+      description: delete a Transformation
+      operationId: deleteTransformation
+      parameters: 
+        - in: path
+          name: resourceid
+          schema: 
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not found
+
+  /download/{resourceid}:
     get:
       security:
         - bearerAuth: []
+      tags:
+        - DataSource
       description: Fetches a particular Dataset
       operationId: getDataset
       parameters:
         - in: path
-          name: resource
+          name: resourceid
           schema: 
             type: string
           required: true
@@ -139,15 +201,17 @@ paths:
         '400':
           description: Bad Request
 
-  /upload/{resource}:
+  /upload/{resourceid}:
     put:
       security:
         - bearerAuth: []
+      tags:
+        - DataSink
       description: Edit a dataset
       operationId: updateDataset
       parameters:
         - in: path
-          name: resource
+          name: resourceid
           schema: 
             type: string
           required: true
@@ -159,21 +223,23 @@ paths:
         '400':
           description: Bad Request
 
-  /delete/{resource}:
+  /delete/{resourceid}:
     delete:
       security:
         - bearerAuth: []
+      tags:
+        - DataSink
       description: Delete a dataset
       operationId: deleteDataset
       parameters:
         - in: path
-          name: resource
+          name: resourceid
           schema: 
             type: string
           required: true
       responses:
         '204':
-          description: The resource was deleted successfully.
+          description: The file is deleted.
         '404':
           description: Not found
  
