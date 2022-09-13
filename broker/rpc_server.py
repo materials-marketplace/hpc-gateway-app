@@ -55,7 +55,11 @@ def relay(request: MessageBrokerRequestModel):
     # Use GET request method
     # TODO how I know it is GET??
     params = request.query_params
-    if endpoint == '' or endpoint == 'jobs/' or 'download/' in endpoint:
+    logging.info(f"request is: {request}.")
+    logging.info(f"endpoint is: {endpoint}.")
+    logging.info(f"{endpoint=='heartbeat'}")
+    
+    if endpoint == 'heartbeat' or endpoint == 'jobs/' or 'download/' in endpoint:
         resp = requests.get(
             abs_url,
             params=params,

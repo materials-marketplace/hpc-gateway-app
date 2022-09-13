@@ -4,3 +4,4 @@ __pycache__
 app.info
 *.egg-info/
 deploy/logs/*
+deploy/templogs/*

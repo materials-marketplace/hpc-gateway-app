@@ -30,7 +30,7 @@ def get_boolean_var(var):
 
 debug = get_boolean_var(os.environ.get("HPCGATEWAY_DEBUG_MODE", False))
 USE_SSL = get_boolean_var(os.environ.get("HPCGATEWAY_USE_SSL", False))
-FLASK_PORT = os.environ.get("FLASK_PORT", 5005)
+FLASK_PORT = os.environ.get("HPCGATEWAY_FLASK_PORT", 5005)
 
 # Setup the client for the specific account
 # Create an authorization object with Client Credentials authorization grant
@@ -119,7 +119,7 @@ def dbtest():
 ## TEST ONLY
 #######################
     
-@app.route("/")
+@app.route("/heartbeat")
 @token_required
 def heartbeat(current_user):
     user = User().get_by_email(current_user['email'])
@@ -185,7 +185,7 @@ def create_user(current_user):
             repo_path = os.path.join(EXEC_HOME_FOLDER, repo)
             app.logger.debug(f"Will create repo at {repo_path}")
             app.logger.debug(f"machine={MACHINE}, path={repo_path}")
-            f7t_client.mkdir(machine=MACHINE, target_path=repo_path)
+            f7t_client.mkdir(machine=MACHINE, target_path=repo_path, p=True)
             
             # New db user created
             return jsonify(
@@ -522,7 +522,7 @@ class LogRequestFormatter(logging.Formatter):
 
 
 if __name__ == "__main__":
-    LOG_PATH = os.environ.get("HPCGATEWAY_LOG_PATH", "./deploy/logs/hpc-gateway")
+    LOG_PATH = os.environ.get("HPCGATEWAY_LOG_PATH", "./deploy/templogs/hpc-gateway")
     # timed rotation: 1 (interval) rotation per day (when="D")
     logHandler = TimedRotatingFileHandler(f'{LOG_PATH}/gw.log', when='D', interval=1)
 

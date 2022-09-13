@@ -12,7 +12,7 @@ services:
       args:
         CONFIG_FILE: config.json
     env_file:
-      - ./common.env
+      - ./iwm.env
     volumes:
       - './logs/hpc-gateway:/var/log:delegated'
     ports:
@@ -29,7 +29,7 @@ services:
       context: ..
       dockerfile: deploy/broker/Dockerfile
     env_file:
-      - ./common.env
+      - ./iwm.env
     volumes:
       - './logs/broker:/var/log:delegated'
     networks:
