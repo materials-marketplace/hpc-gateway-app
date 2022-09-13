@@ -60,7 +60,7 @@ The changes of firecrest deployment that needed on MarketPlace HPC can be found 
 
 ### HPC-GW app and rpc-broker server
 [.deploy/docker-compose.yml]
-Then need to start the hpc-app to communicate to the firecrest. 
+Then need to start the hpc-gateway-app to communicate to the firecrest. 
 Since the hpc-app is in the private internal network, we use MarketPlace broker to talk to public network.
 Go to the hpc-app repo and run `python app.py` (WIP: using docker-compose to start so the dependencies are not needed).
 This will start the hpc-app and the `rpc-brocker` (should be optinonal for the hpc-app accessable deployed on public network). 
