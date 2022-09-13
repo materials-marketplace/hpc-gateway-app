@@ -118,8 +118,12 @@ def dbtest():
     return jsonify(user_get=user_get, user=user), 200
 ## TEST ONLY
 #######################
-    
+
 @app.route("/")
+def index_page():
+    return {"message": "Hello I am HPC."}
+    
+@app.route("/heartbeat")
 @token_required
 def heartbeat(current_user):
     user = User().get_by_email(current_user['email'])
@@ -143,8 +147,6 @@ def heartbeat(current_user):
                 output=resp,
                 message='system is ready for you, HAPPY COMPUTING!',
             ), 200
-            
-
 
 @app.route("/user", methods=["GET"])
 @token_required
