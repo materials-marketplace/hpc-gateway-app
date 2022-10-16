@@ -46,7 +46,7 @@ curl -X POST \
 The correspond HPC-Gateway app is [HPC gateway (broker)](https://staging.materials-marketplace.eu/app/hpc-gateway-broker) (ID: `dc67d85e-7945-49fa-bf85-3159a8358f85`) deployed on staging server since RPC broker server needed.
 
 
-## Development and run locally
+## Development and run locally for testing
 
 - Create a virtual environment, activate it and install the dependencies.
 - `pip install -U ".[dev]"`
@@ -56,10 +56,6 @@ The correspond HPC-Gateway app is [HPC gateway (broker)](https://staging.materia
 ## Registry the app to MarketPlace
 
 https://materials-marketplace.readthedocs.io/en/latest/apps/registration.html
-
-## Interacte with HPC through MarketPlace proxy
-
-Check [materials-marketplace-hpc-sdk]() for how to use the app to communicate with HPC cluster.
 
 ## How to deploy app to heroku (for Materials Cloud deployment)
 

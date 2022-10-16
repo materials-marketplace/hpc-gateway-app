@@ -9,9 +9,9 @@ import firecrest as f7t
 from flask import Flask, flash, g, jsonify, request, send_file
 from werkzeug.utils import secure_filename
 
-from hpc_gateway.auth_middleware import token_required
-from hpc_gateway.f7t import Firecrest, HardCodeTokenAuth
-from hpc_gateway.models import Jobs, User
+from gateway.auth_middleware import token_required
+from gateway.f7t import Firecrest, HardCodeTokenAuth
+from gateway.models import Jobs, User
 
 
 # Checks if an environment variable injected to F7T is a valid True value
