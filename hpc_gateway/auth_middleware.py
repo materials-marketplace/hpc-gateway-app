@@ -1,8 +1,9 @@
-from functools import wraps
-import os
 import json
-from flask import request, jsonify
+import os
+from functools import wraps
+
 import requests
+from flask import jsonify, request
 
 MP_USERINFO_URL = os.environ.get("MP_USERINFO_URL")
 
@@ -14,6 +15,7 @@ if WHITE_LIST is not None:
     # read from ENV
     WHITE_LIST = json.loads(WHITE_LIST)
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -21,11 +23,14 @@ def token_required(f):
         if "Authorization" in request.headers:
             token = request.headers["Authorization"].split(" ")[1]
         if not token:
-            return jsonify(
-                message="Authentication Token is missing!",
-                data=None,
-                error="Unauthorized",
-            ), 401
+            return (
+                jsonify(
+                    message="Authentication Token is missing!",
+                    data=None,
+                    error="Unauthorized",
+                ),
+                401,
+            )
         try:
             headers = {
                 "Accept": "application/json",
@@ -46,25 +51,34 @@ def token_required(f):
                 current_user = None
 
             if current_user is None:
-                return jsonify(
-                    message="Invalid Authentication token!",
-                    data=None,
-                    error="Unauthorized",
-                ), 401
-                
-            if WHITE_LIST is not None and current_user['email'] not in WHITE_LIST:
-                return jsonify(
-                    message=f"User {current_user['email']} not allowed to access the API.",
-                    data=None,
-                    error="Access IM"
-                ), 503
+                return (
+                    jsonify(
+                        message="Invalid Authentication token!",
+                        data=None,
+                        error="Unauthorized",
+                    ),
+                    401,
+                )
+
+            if WHITE_LIST is not None and current_user["email"] not in WHITE_LIST:
+                return (
+                    jsonify(
+                        message=f"User {current_user['email']} not allowed to access the API.",
+                        data=None,
+                        error="Access IM",
+                    ),
+                    503,
+                )
 
         except Exception as e:
-            return jsonify(
-                message="Something went wrong.",
-                data=None,
-                error=str(e),
-            ), 500
+            return (
+                jsonify(
+                    message="Something went wrong.",
+                    data=None,
+                    error=str(e),
+                ),
+                500,
+            )
 
         return f(current_user, *args, **kwargs)
 

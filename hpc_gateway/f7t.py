@@ -1,8 +1,8 @@
+import pathlib
+from contextlib import nullcontext
+
 import firecrest as f7t
 import requests
-import os
-from contextlib import nullcontext
-import pathlib
 
 # # For CSCS daint only
 # # Configuration parameters for the Authorization Object
@@ -15,18 +15,18 @@ import pathlib
 #     client_id, client_secret, token_uri
 # )
 
+
 # Create an authorization object with Client Credentials authorization grant
 class HardCodeTokenAuth:
-    
     def __init__(self, token):
         self._token = token
-        
+
     def get_access_token(self):
         return self._token
-    
+
+
 class Firecrest(f7t.Firecrest):
-    
-    
+
     # def simple_download(self, source_path, target_path):
     #     """Blocking call to download a small file.
     #     The maximun size of file that is allowed can be found from the parameters() call.
@@ -37,7 +37,7 @@ class Firecrest(f7t.Firecrest):
     #     :calls: GET `/utilities/download`
     #     :rtype: None
     #     """
-        
+
     #     url = f"{self._firecrest_url}/utilities/download"
     #     headers = {
     #         "Authorization": f"Bearer {self._authorization.get_access_token()}",
@@ -53,7 +53,7 @@ class Firecrest(f7t.Firecrest):
 
     #     with context as f:
     #         f.write(resp.content)
-            
+
     def simple_upload(self, machine, source_path, target_path, filename):
         """Blocking call to upload a small file.
         The file that will be uploaded will have the same name as the source_path.
@@ -89,7 +89,7 @@ class Firecrest(f7t.Firecrest):
             )
 
         self._json_response([resp], 201)
-    
+
     # def simple_delete(self, target_path):
     #     """Blocking call to delete a small file.
     #     :param target_path: the absolute target path
@@ -105,6 +105,5 @@ class Firecrest(f7t.Firecrest):
     #     }
     #     data = {"targetPath": target_path}
     #     resp = requests.delete(url=url, headers=headers, data=data, verify=self._verify)
-        
+
     #     return self._json_response([resp], 204)
-        

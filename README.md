@@ -78,7 +78,7 @@ Clone the repository
 Use Git to clone mp-hpc's source code to your local machine.
 
 ```
-$ heroku git:clone -a mp-hpc 
+$ heroku git:clone -a mp-hpc
 $ cd mp-hpc
 ```
 
@@ -100,16 +100,16 @@ $ git push heroku master
 ## How to deploy the infracstructures and run hpc-app on IWM HPC.
 
 ### Firecrest deployment
-The firecrest on MarketPlace firecrest server need to be started. 
-Go to `firecrest/` folder of `hpc-fire` server and run `docker-compose up -d`. 
+The firecrest on MarketPlace firecrest server need to be started.
+Go to `firecrest/` folder of `hpc-fire` server and run `docker-compose up -d`.
 The changes of firecrest deployment that needed on MarketPlace HPC can be found on https://github.com/unkcpz/firecrest/pull/1
 
 ### HPC-GW app and rpc-broker server
 [.deploy/docker-compose.yml]
-Then need to start the hpc-gateway-app to communicate to the firecrest. 
+Then need to start the hpc-gateway-app to communicate to the firecrest.
 Since the hpc-app is in the private internal network, we use MarketPlace broker to talk to public network.
 Go to the hpc-app repo and run `python app.py` (WIP: using docker-compose to start so the dependencies are not needed).
-This will start the hpc-app and the `rpc-brocker` (should be optinonal for the hpc-app accessable deployed on public network). 
+This will start the hpc-app and the `rpc-brocker` (should be optinonal for the hpc-app accessable deployed on public network).
 
 ## For maintainers
 
@@ -162,5 +162,3 @@ and the MarketPlace project funded by [Horizon 2020](https://ec.europa.eu/progra
  <img src="miscellaneous/logos/MARVEL.png" alt="MARVEL" height="75px">
  <img src="miscellaneous/logos/MarketPlace.png" alt="MarketPlace" height="75px">
 </div>
-
-

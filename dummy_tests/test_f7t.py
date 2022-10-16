@@ -1,5 +1,6 @@
 # test that f7t server running fine
 import os
+
 import firecrest as f7t
 from dotenv import load_dotenv
 
@@ -11,20 +12,20 @@ F7T_URL = os.environ.get("F7T_URL")
 
 # Create an authorization object with Client Credentials authorization grant
 class HardCodeTokenAuth:
-    
     def __init__(self, token):
         self._token = token
-        
+
     def get_access_token(self):
         return self._token
-    
+
+
 hardcode = HardCodeTokenAuth(
     token=F7T_TOKEN,
 )
 
 # Setup the client for the specific account
 client = f7t.Firecrest(
-    firecrest_url=F7T_URL, 
+    firecrest_url=F7T_URL,
     authorization=hardcode,
 )
 

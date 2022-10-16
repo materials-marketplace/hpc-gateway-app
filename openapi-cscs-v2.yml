@@ -1,47 +1,48 @@
+---
 openapi: 3.0.0
 
 info:
-  title: HPC cscs gateway app (v2)
-  description: Access to CSCS HPC through firecrest
-  version: 0.1.1
-  x-application-name: HPC cscs gateway app (v2)
-  x-oauth-client:
-    client-id:
-    callback: https://mp-hpc.herokuapp.com/auth_callback
-    scopes: ["email", "openid", "profile"]
-  x-contacts:
-    - jusong.yu@epfl.ch
-  x-logo: https://raw.githubusercontent.com/aiidalab/aiidalab-widgets-base/master/miscellaneous/logos/aiidalab.png
-  x-products:
-    - name: HPC cscs gateway app (v2)
-      product-id:
-      description: HPC cscs gateway app (v2)
+    title: HPC cscs gateway app (v2)
+    description: Access to CSCS HPC through firecrest
+    version: 0.1.1
+    x-application-name: HPC cscs gateway app (v2)
+    x-oauth-client:
+        client-id:
+        callback: https://mp-hpc.herokuapp.com/auth_callback
+        scopes: [email, openid, profile]
+    x-contacts:
+        - jusong.yu@epfl.ch
+    x-logo: https://raw.githubusercontent.com/aiidalab/aiidalab-widgets-base/master/miscellaneous/logos/aiidalab.png
+    x-products:
+        - name: HPC cscs gateway app (v2)
+          product-id:
+          description: HPC cscs gateway app (v2)
 servers:
-  - url: https://mp-hpc.herokuapp.com
+    - url: https://mp-hpc.herokuapp.com
 
 tags:
-  - name: System
-    description: Provides functionalities for operability of applications.
+    - name: System
+      description: Provides functionalities for operability of applications.
 
 paths:
-  /heartbeat:
-    get:
-      security:
-        - bearerAuth: []
-      tags:
-        - System
-      summary: heartbeat
-      description: To check if an application is alive
-      operationId: heartbeat
-      responses:
-        "200":
-          description: Success
-        "404":
-          description: Not found
+    /heartbeat:
+        get:
+            security:
+                - bearerAuth: []
+            tags:
+                - System
+            summary: heartbeat
+            description: To check if an application is alive
+            operationId: heartbeat
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
 
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
