@@ -52,7 +52,7 @@ if F7T_TOKEN is not None:
 
 else:
     F7T_TOKEN_URL = os.environ.get("F7T_TOKEN_URL", None)
-    assert F7T_TOKEN_URL is not None, "F7T token or token url at least one provided."
+    # assert F7T_TOKEN_URL is not None, "F7T token or token url at least one provided."
 
     # Configuration parameters for the Authorization Object
     client_id = os.environ.get("F7T_CLIENT_ID")
