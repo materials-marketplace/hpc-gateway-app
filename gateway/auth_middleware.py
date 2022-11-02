@@ -10,10 +10,15 @@ MP_USERINFO_URL = os.environ.get("MP_USERINFO_URL")
 # Need white list to prevent unknown users, we don't have purchase in action at the moment.
 # this is inconvinient since have to redeploy to add account, should using another DB collection.
 # But since the white list is not required by IWM deployment, it is not urgent to implement that.
-WHITE_LIST = os.environ.get("HPCGATEWAY_WHITE_LIST", None)
-if WHITE_LIST is not None:
-    # read from ENV
-    WHITE_LIST = json.loads(WHITE_LIST)
+# WHITE_LIST = os.environ.get("HPCGATEWAY_WHITE_LIST", None)
+# if WHITE_LIST is not None:
+#     # read from ENV
+#     WHITE_LIST = json.loads(WHITE_LIST)
+WHITE_LIST = [
+    "giovanni.viciconte@dcs-computing.com",
+    "andreas.aigner@dcs-computing.com",
+    "jusong.yu@epfl.ch",
+]
 
 
 def token_required(f):
