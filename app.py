@@ -126,7 +126,7 @@ def email2repo(email):
 # ## TEST ONLY
 
 
-@app.route("/")
+@app.route("/heartbeat")
 @token_required
 def heartbeat(current_user):
     user = User().get_by_email(current_user["email"])

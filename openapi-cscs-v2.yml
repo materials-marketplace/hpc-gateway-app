@@ -2,23 +2,23 @@
 openapi: 3.0.0
 
 info:
-    title: HPC cscs gateway app (v2)
+    title: HPC gateway app (Materials Cloud)
     description: Access to CSCS HPC through firecrest
     version: 0.1.1
-    x-application-name: HPC cscs gateway app (v2)
-    x-oauth-client:
-        client-id:
-        callback: https://mp-hpc.herokuapp.com/auth_callback
-        scopes: [email, openid, profile]
+    x-application-name: HPC gateway app (Materials Cloud)
+    # x-oauth-client:
+    #     client-id:
+    #     callback: https://mp-hpc.herokuapp.com/auth_callback
+    #     scopes: [email, openid, profile]
     x-contacts:
         - jusong.yu@epfl.ch
     x-logo: https://raw.githubusercontent.com/aiidalab/aiidalab-widgets-base/master/miscellaneous/logos/aiidalab.png
     x-products:
-        - name: HPC cscs gateway app (v2)
+        - name: HPC gateway app (Materials Cloud)
           product-id:
-          description: HPC cscs gateway app (v2)
+          description: HPC gateway app (Materials Cloud)
 servers:
-    - url: https://mp-hpc.herokuapp.com
+    - url: https://hpc-gateway.matcloud.xyz
 
 tags:
     - name: System
