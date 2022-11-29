@@ -1,4 +1,3 @@
-"""Application Models"""
 import os
 
 import bson
@@ -14,7 +13,20 @@ if os.environ.get("F7T_TOKEN", None) is not None:
 else:
     # The CSCS deploy
     db = client.cscs_hpc
-
+    
+def initial_db(deploy_name):
+    if deploy_name == "iwm":
+        db = client.iwm_hpc
+    elif deploy_name == "cscs":
+        db = client.cscs_hpc
+    elif deploy_name == "test":
+        import mongomock
+        client = mongomock.MongoClient()
+        db = client.test
+    else:
+        raise ValueError(f"Deploy name {deploy_name} is not: 'iwm', 'cscs' or 'test'.")
+    
+    return db
 
 class Jobs:
     """Jobs Model

@@ -4,15 +4,9 @@ openapi: 3.0.0
 info:
     title: HPC gateway app (Materials Cloud)
     description: Access to CSCS HPC through firecrest
-    version: 0.1.1
+    version: 0.1.0
     x-application-name: HPC gateway app (Materials Cloud)
-    # x-oauth-client:
-    #     client-id:
-    #     callback: https://mp-hpc.herokuapp.com/auth_callback
-    #     scopes: [email, openid, profile]
-    x-contacts:
-        - jusong.yu@epfl.ch
-    x-logo: https://raw.githubusercontent.com/aiidalab/aiidalab-widgets-base/master/miscellaneous/logos/aiidalab.png
+    x-api-version: 0.3.0
     x-products:
         - name: HPC gateway app (Materials Cloud)
           product-id:
@@ -20,23 +14,207 @@ info:
 servers:
     - url: https://hpc-gateway.matcloud.xyz
 
-tags:
-    - name: System
-      description: Provides functionalities for operability of applications.
-
 paths:
+# Administrative path
     /heartbeat:
         get:
             security:
                 - bearerAuth: []
-            tags:
-                - System
-            summary: heartbeat
-            description: To check if an application is alive
+            description: Returns a heartbeat
             operationId: heartbeat
             responses:
                 '200':
                     description: Success
+
+# Transformation app paths
+    /job/initialize:
+        post:
+            security:
+                - bearerAuth: []
+            description: Initialize a Transformation
+            operationId: newTransformation
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TransformationConfig'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: 3e22541c-a95e-4443-8cdc-0866171d343b
+                '400':
+                    description: Bad Request
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Wrong configuration input
+
+    /job/{transformation_id}/state:
+        get:
+            security:
+                - bearerAuth: []
+            description: Get the state of a Transformation
+            operationId: getTransformationState
+            parameters:
+                - in: path
+                  name: transformation_id
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
+                '404':
+                    description: Not found
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Unexpected error
+
+    /job/{resourceid}:
+        post:
+            security:
+                - bearerAuth: []
+            tags:
+                - Transformation
+            description: Start execution of a Transformation
+            operationId: startTransformation
+            parameters:
+                - in: path
+                  name: resourceid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+
+    /jobs/cancel/{resourceid}:
+        post:
+            security:
+                - bearerAuth: []
+            tags:
+                - Transformation
+            description: cancel execution of a Transformation
+            operationId: stopTransformation
+            parameters:
+                - in: path
+                  name: resourceid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+
+    /jobs/delete/{resourceid}:
+        post:
+            security:
+                - bearerAuth: []
+            tags:
+                - Transformation
+            description: delete a Transformation
+            operationId: deleteTransformation
+            parameters:
+                - in: path
+                  name: resourceid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+
+    /download/{resourceid}:
+        get:
+            security:
+                - bearerAuth: []
+            tags:
+                - DataSource
+            description: Fetches a particular Dataset
+            operationId: getDataset
+            parameters:
+                - in: path
+                  name: resourceid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+                '404':
+                    description: Not found
+                '400':
+                    description: Bad Request
+
+    /upload/{resourceid}:
+        put:
+            security:
+                - bearerAuth: []
+            tags:
+                - DataSink
+            description: Edit a dataset
+            operationId: updateDataset
+            parameters:
+                - in: path
+                  name: resourceid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+                '400':
+                    description: Bad Request
+
+    /delete/{resourceid}:
+        delete:
+            security:
+                - bearerAuth: []
+            tags:
+                - DataSink
+            description: Delete a dataset
+            operationId: deleteDataset
+            parameters:
+                - in: path
+                  name: resourceid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '204':
+                    description: The file is deleted.
                 '404':
                     description: Not found
 
@@ -46,3 +224,17 @@ components:
             type: http
             scheme: bearer
             bearerFormat: JWT
+    schemas:
+        TransformationConfig:
+            title: TransformationConfig
+            required:
+                - Configuration
+            type: object
+            properties:
+                image_name:
+                    title: image_name
+                    type: string
+                executable:
+                    title: excutable
+                    type: string
+            description: Transformation data model
