@@ -49,16 +49,16 @@ Job: Create/Update/Delete/Get simulation jobs
         the real state is read from remote on the fly by f7t.
 """
 
-def create_job(user_id, job_uuid, repository):
+def create_job(user_id, remote_folder, repository):
     """Create job to DB.
 
     Args:
         user_id (str): attached user
-        job_uuid (str): the remote folder name a uuid in user's repository folder
+        remote_folder (str): the remote folder name a uuid in user's repository folder
         repository (str): user's repository folder
     """
     state = "CREATED"
-    job_info = {'user_id': user_id, 'job_uuid': job_uuid, 'repository': repository, 'state': state}
+    job_info = {'user_id': user_id, 'remote_folder': remote_folder, 'repository': repository, 'state': state}
     return db.jobs.insert_one(job_info)
 
 def update_job(job_id, state):
@@ -66,7 +66,7 @@ def update_job(job_id, state):
     """
     
     response = db.jobs.update_one(
-        { "job_id": job_id },
+        { "_id": job_id },
         { "$set": { "state": state } }
     )
     return response

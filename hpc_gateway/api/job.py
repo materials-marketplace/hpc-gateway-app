@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 
-from hpc_gateway.model.db import get_db
+from hpc_gateway.model.database import get_db
 
 # For the job manipulate, basically the
 # capabilies relate to simulation.

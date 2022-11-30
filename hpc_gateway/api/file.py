@@ -4,7 +4,7 @@ destroyed from job API instead of here.
 
 from flask import Blueprint, request, jsonify
 
-from hpc_gateway.model.db import get_db
+from hpc_gateway.model.database import get_db
 
 # For the direct DB data manipulate, basically the
 # capabilies of DataSink and DataSource.
