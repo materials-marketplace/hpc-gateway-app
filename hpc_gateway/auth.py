@@ -1,4 +1,3 @@
-import json
 import os
 from functools import wraps
 
@@ -6,19 +5,6 @@ import requests
 from flask import jsonify, request
 
 MP_USERINFO_URL = os.environ.get("MP_USERINFO_URL")
-
-# Need white list to prevent unknown users, we don't have purchase in action at the moment.
-# this is inconvinient since have to redeploy to add account, should using another DB collection.
-# But since the white list is not required by IWM deployment, it is not urgent to implement that.
-# WHITE_LIST = os.environ.get("HPCGATEWAY_WHITE_LIST", None)
-# if WHITE_LIST is not None:
-#     # read from ENV
-#     WHITE_LIST = json.loads(WHITE_LIST)
-WHITE_LIST = [
-    "giovanni.viciconte@dcs-computing.com",
-    "andreas.aigner@dcs-computing.com",
-    "jusong.yu@epfl.ch",
-]
 
 
 def token_required(f):
@@ -63,16 +49,6 @@ def token_required(f):
                         error="Unauthorized",
                     ),
                     401,
-                )
-
-            if WHITE_LIST is not None and current_user["email"] not in WHITE_LIST:
-                return (
-                    jsonify(
-                        message=f"User {current_user['email']} not allowed to access the API.",
-                        data=None,
-                        error="Access IM",
-                    ),
-                    503,
                 )
 
         except Exception as e:
