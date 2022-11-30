@@ -157,153 +157,153 @@ def get_user(current_user):
         logging.error(msg)
         return Response(str(msg), status=400, mimetype="text/plain")
 
-# @app.route("/user", methods=["POST"])
-# @token_required
-# def create_user(current_user):
-#     # This endpoint is not needed for IWM deployment and has no capability correspond
-#     # It needed to be moved to token_required check for user in db and user repo.
-#     try:
-#         email = current_user["email"]
-#         name = current_user["name"]
+@app.route("/user", methods=["POST"])
+@token_required
+def create_user(current_user):
+    # This endpoint is not needed for IWM deployment and has no capability correspond
+    # It needed to be moved to token_required check for user in db and user repo.
+    try:
+        email = current_user["email"]
+        name = current_user["name"]
 
-#         try:
-#             # user name and email validate
-#             user = User().create(name=name, email=email)
-#         except Exception as exc:
-#             return (
-#                 jsonify(
-#                     error="failed to create user in DB.",
-#                     message=f"{exc}",
-#                 ),
-#                 500,
-#             )
+        try:
+            # user name and email validate
+            user = User().create(name=name, email=email)
+        except Exception as exc:
+            return (
+                jsonify(
+                    error="failed to create user in DB.",
+                    message=f"{exc}",
+                ),
+                500,
+            )
 
-#         # user are created or aready exist (None return from create method)
-#         if user:
-#             # create the repository for user to store file
-#             repo = email2repo(email)
-#             repo_path = os.path.join(EXEC_HOME_FOLDER, repo)
-#             app.logger.debug(f"Will create repo at {repo_path}")
-#             app.logger.debug(f"machine={MACHINE}, path={repo_path}")
-#             f7t_client.mkdir(machine=MACHINE, target_path=repo_path)
+        # user are created or aready exist (None return from create method)
+        if user:
+            # create the repository for user to store file
+            repo = email2repo(email)
+            repo_path = os.path.join(EXEC_HOME_FOLDER, repo)
+            app.logger.debug(f"Will create repo at {repo_path}")
+            app.logger.debug(f"machine={MACHINE}, path={repo_path}")
+            f7t_client.mkdir(machine=MACHINE, target_path=repo_path)
 
-#             # New db user created
-#             return (
-#                 jsonify(
-#                     message="New database and repository are created.",
-#                     name=name,
-#                     email=email,
-#                     id=user["_id"],
-#                 ),
-#                 200,
-#             )
+            # New db user created
+            return (
+                jsonify(
+                    message="New database and repository are created.",
+                    name=name,
+                    email=email,
+                    id=user["_id"],
+                ),
+                200,
+            )
 
-#         else:
-#             # Already exist in DB
-#             user = User().get_by_email(email=email)
-#             return (
-#                 jsonify(
-#                     message=f"User {user} already registered in database.",
-#                 ),
-#                 200,
-#             )
-#     except Exception as e:
-#         return {"error": "Something went wrong", "message": str(e)}, 500
-
-
-# @app.route("/jobs/initialize", methods=["POST"])
-# @token_required
-# def create_job(current_user):
-#     """This will essentially create a workdir in user repo
-#     and return the folder name as resourceid"""
-#     repo = email2repo(current_user["email"])
-
-#     # the folder name (resource) is a uuid
-#     transformation_id = str(uuid.uuid4())
-
-#     try:
-#         target_path = os.path.join(EXEC_HOME_FOLDER, repo, transformation_id)
-#         f7t_client.mkdir(machine=MACHINE, target_path=target_path)
-#     except Exception as e:
-#         return (
-#             jsonify(
-#                 entry_point="create_job",
-#                 error=f"unable to mkdir {target_path}",
-#                 error_message=str(e),
-#             ),
-#             500,
-#         )
-#     else:
-#         return (
-#             jsonify(
-#                 resourceid=transformation_id,
-#             ),
-#             200,
-#         )
+        else:
+            # Already exist in DB
+            user = User().get_by_email(email=email)
+            return (
+                jsonify(
+                    message=f"User {user} already registered in database.",
+                ),
+                200,
+            )
+    except Exception as e:
+        return {"error": "Something went wrong", "message": str(e)}, 500
 
 
-# @app.route("/jobs/run/<resourceid>", methods=["POST"])
-# @token_required
-# def run_job(current_user, resourceid):
-#     """Submit job from the folder and return jobid"""
-#     repo = email2repo(current_user["email"])
+@app.route("/jobs/initialize", methods=["POST"])
+@token_required
+def create_job(current_user):
+    """This will essentially create a workdir in user repo
+    and return the folder name as resourceid"""
+    repo = email2repo(current_user["email"])
 
-#     workdir = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
+    # the folder name (resource) is a uuid
+    transformation_id = str(uuid.uuid4())
 
-#     script_path = os.path.join(workdir, "submit.sh")
-#     # get files in the folder
-#     try:
-#         output = f7t_client.list_files(machine=MACHINE, target_path=workdir)
-#     except KeyError as exc:
-#         return (
-#             jsonify(
-#                 func="list files before submission to check the job scripts.",
-#                 error=f"Something went wrong when retrive files in {resourceid}",
-#                 message=str(exc),
-#             ),
-#             501,
-#         )
-#     except Exception as exc:
-#         return (
-#             jsonify(
-#                 func="list files before submission to check the job scripts.",
-#                 error=f"Something went wrong when retrive files in {resourceid}",
-#                 message=str(exc),
-#             ),
-#             500,
-#         )
-#     else:
-#         files = [i["name"] for i in output]
+    try:
+        target_path = os.path.join(EXEC_HOME_FOLDER, repo, transformation_id)
+        f7t_client.mkdir(machine=MACHINE, target_path=target_path)
+    except Exception as e:
+        return (
+            jsonify(
+                entry_point="create_job",
+                error=f"unable to mkdir {target_path}",
+                error_message=str(e),
+            ),
+            500,
+        )
+    else:
+        return (
+            jsonify(
+                resourceid=transformation_id,
+            ),
+            200,
+        )
 
-#     if "submit.sh" not in files:
-#         return jsonify(error="job script 'submit.sh' not uploaded yet.")
 
-#     try:
-#         resp = f7t_client.submit(
-#             machine=MACHINE, job_script=script_path, local_file=False
-#         )
-#         user = User().get_by_email(current_user["email"])
-#         userid = user["_id"]
-#         jobid = resp.get("jobid")
-#         job = Jobs().create(
-#             userid=str(userid), jobid=str(jobid), resourceid=str(resourceid)
-#         )
+@app.route("/jobs/run/<resourceid>", methods=["POST"])
+@token_required
+def run_job(current_user, resourceid):
+    """Submit job from the folder and return jobid"""
+    repo = email2repo(current_user["email"])
 
-#         resp["userid"] = job["userid"]
-#         resp["jobid"] = job["jobid"]
-#         resp["resourceid"] = job["resourceid"]
+    workdir = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
 
-#         return resp, 200
+    script_path = os.path.join(workdir, "submit.sh")
+    # get files in the folder
+    try:
+        output = f7t_client.list_files(machine=MACHINE, target_path=workdir)
+    except KeyError as exc:
+        return (
+            jsonify(
+                func="list files before submission to check the job scripts.",
+                error=f"Something went wrong when retrive files in {resourceid}",
+                message=str(exc),
+            ),
+            501,
+        )
+    except Exception as exc:
+        return (
+            jsonify(
+                func="list files before submission to check the job scripts.",
+                error=f"Something went wrong when retrive files in {resourceid}",
+                message=str(exc),
+            ),
+            500,
+        )
+    else:
+        files = [i["name"] for i in output]
 
-#     except Exception as e:
-#         return (
-#             jsonify(
-#                 func="submit job",
-#                 error="Something went wrong in submission",
-#                 message=str(e),
-#             ),
-#             500,
-#         )
+    if "submit.sh" not in files:
+        return jsonify(error="job script 'submit.sh' not uploaded yet.")
+
+    try:
+        resp = f7t_client.submit(
+            machine=MACHINE, job_script=script_path, local_file=False
+        )
+        user = User().get_by_email(current_user["email"])
+        userid = user["_id"]
+        jobid = resp.get("jobid")
+        job = Jobs().create(
+            userid=str(userid), jobid=str(jobid), resourceid=str(resourceid)
+        )
+
+        resp["userid"] = job["userid"]
+        resp["jobid"] = job["jobid"]
+        resp["resourceid"] = job["resourceid"]
+
+        return resp, 200
+
+    except Exception as e:
+        return (
+            jsonify(
+                func="submit job",
+                error="Something went wrong in submission",
+                message=str(e),
+            ),
+            500,
+        )
 
 
 # # still use resourceid for job manipulation it will map to the jobid internally
@@ -579,6 +579,7 @@ if __name__ == "__main__":
     # disable Flask internal logging to avoid full url exposure
     logging.getLogger("werkzeug").propagate = False
 
+    
     if USE_SSL:
         app.run(debug=debug, host="0.0.0.0", port=FLASK_PORT, ssl_context="adhoc")
     else:

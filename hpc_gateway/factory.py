@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 
 from hpc_gateway.api.file import file_api_v1
 from hpc_gateway.api.job import job_api_v1
+from hpc_gateway.api.user import user_api_v1
 
 class MongoJsonEncoder(JSONEncoder):
     def default(self, obj):
@@ -28,10 +29,10 @@ def create_app():
     app.json_encoder = MongoJsonEncoder
     app.register_blueprint(file_api_v1)
     app.register_blueprint(job_api_v1)
+    app.register_blueprint(user_api_v1)
 
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def serve(path):
+    @app.route('/')
+    def serve():
         return render_template('index.html')
 
-    return 
+    return app

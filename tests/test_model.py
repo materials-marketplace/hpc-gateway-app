@@ -1,21 +1,6 @@
-import mongomock
-import pymongo
-import pytest
 import uuid
-from bson.binary import UuidRepresentation
 
 from hpc_gateway.model import database
-
-@pytest.fixture(scope="session")
-@mongomock.patch(servers=(('server.example.com', 27017),))
-def mock_db():
-    """This fixture last for whole test session, the db will not destroy 
-    until the end of pytest"""
-    client = pymongo.MongoClient(host='server.example.com')
-    db = client._database
-    return db
-    
-    
 
 def test_create_user(monkeypatch, mock_db):
     monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)

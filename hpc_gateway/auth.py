@@ -2,15 +2,14 @@ import os
 from functools import wraps
 
 import requests
-from flask import jsonify, request
-
-MP_USERINFO_URL = os.environ.get("MP_USERINFO_URL")
-
+from requests.exceptions import ConnectionError
+from flask import jsonify, request, current_app
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
+        userinfo_url = current_app.config['MP_USERINFO_URL']
         if "Authorization" in request.headers:
             token = request.headers["Authorization"].split(" ")[1]
         if not token:
@@ -30,8 +29,9 @@ def token_required(f):
             }
 
             # Use GET request method
+
             resp = requests.get(
-                MP_USERINFO_URL,
+                userinfo_url,
                 headers=headers,
                 verify=None,
             )
@@ -51,6 +51,15 @@ def token_required(f):
                     401,
                 )
 
+        except ConnectionError as e:
+            return (
+                jsonify(
+                    message=f"Connection error to {userinfo_url} failed.",
+                    data=None,
+                    error=str(e),
+                ),
+                401,
+            )
         except Exception as e:
             return (
                 jsonify(

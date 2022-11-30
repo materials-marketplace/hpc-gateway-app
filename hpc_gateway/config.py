@@ -31,4 +31,6 @@ class StagingConfig(Config):
     
 class TestingConfig(Config):
     TESTING = True
+    MP_URL = "http://staging.materials-marketplace.eu"
+    MP_USERINFO_URL = urljoin(MP_URL, USERINFO_ENDPOINT)
     
