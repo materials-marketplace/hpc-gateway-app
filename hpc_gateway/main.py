@@ -377,37 +377,37 @@ def run_job(current_user, resourceid):
 #         }, 200
 
 
-# @app.route("/jobs/", methods=["GET"])
-# @token_required
-# def list_jobs(current_user):
-#     user = User().get_by_email(current_user["email"])
-#     userid = user["_id"]
+@app.route("/jobs/", methods=["GET"])
+@token_required
+def list_jobs(current_user):
+    user = User().get_by_email(current_user["email"])
+    userid = user["_id"]
 
-#     jobs = Jobs().get_joblist_by_userid(userid)
-#     app.logger.debug(userid)
-#     app.logger.debug(jobs)
-#     if not jobs:
-#         return (
-#             jsonify(
-#                 message=f"no jobs in list of user {user['name']}",
-#             ),
-#             200,
-#         )
+    jobs = Jobs().get_joblist_by_userid(userid)
+    app.logger.debug(userid)
+    app.logger.debug(jobs)
+    if not jobs:
+        return (
+            jsonify(
+                message=f"no jobs in list of user {user['name']}",
+            ),
+            200,
+        )
 
-#     try:
-#         jobs = f7t_client.poll(machine=MACHINE, jobs=jobs)
-#     except Exception as e:
-#         return jsonify(
-#             error=str(e),
-#             message="poll jobs faild.",
-#         )
+    try:
+        jobs = f7t_client.poll(machine=MACHINE, jobs=jobs)
+    except Exception as e:
+        return jsonify(
+            error=str(e),
+            message="poll jobs faild.",
+        )
 
-#     return (
-#         jsonify(
-#             jobs=jobs,
-#         ),
-#         200,
-#     )
+    return (
+        jsonify(
+            jobs=jobs,
+        ),
+        200,
+    )
 
 
 # @app.route("/download/<resourceid>", methods=["GET"])

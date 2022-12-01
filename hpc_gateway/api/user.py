@@ -2,7 +2,7 @@
 remote cluster will be created.
 """
 from pathlib import Path
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, jsonify, current_app
 
 from hpc_gateway.model.database import create_user
 from hpc_gateway.model.f7t import create_f7t_client

@@ -10,6 +10,9 @@ from pymongo.errors import DuplicateKeyError, OperationFailure
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
+class EntityNotFoundError(Exception):
+    """raised when entity not in db."""
+
 def get_db():
     """Configuration method to return db instance.
     """
@@ -23,7 +26,7 @@ def get_db():
 db = LocalProxy(get_db)
 
 """
-User: Create User
+User: Create/Get User
 
 - create_user
 """
@@ -45,6 +48,14 @@ def create_user(email, name, home):
         _id = db.users.insert_one(user_info).inserted_id
         user = db.users.find_one({'_id': _id})
         return user
+    
+def get_user(email):
+    """Get user by its email."""
+    user = db.users.find_one({'email': email})
+    if user:
+        return user
+    else:
+        raise EntityNotFoundError
 
 """
 Job: Create/Update/Delete/Get simulation jobs
@@ -58,28 +69,27 @@ Job: Create/Update/Delete/Get simulation jobs
         the real state is read from remote on the fly by f7t.
 """
 
-def create_job(user_id, remote_folder, repository):
+def create_job(user_id, remote_folder):
     """Create job to DB.
 
     Args:
         user_id (str): attached user
-        remote_folder (str): the remote folder name a uuid in user's repository folder
-        repository (str): user's repository folder
+        remote_folder (str): absolute path the remote folder name a uuid in user's repository folder
     """
     state = "CREATED"
-    job_info = {'user_id': user_id, 'remote_folder': remote_folder, 'repository': repository, 'state': state}
+    job_info = {'user_id': user_id, 'remote_folder': remote_folder, 'state': state}
     _id = db.jobs.insert_one(job_info).inserted_id
     job = db.jobs.find_one({'_id': _id})
     
     return job
 
-def update_job(job_id, state):
-    """Update job state.
+def update_job(job_id, f7t_job_id):
+    """Set the f7t job id and update job state to ACTIVATED
     """
     
     response = db.jobs.update_one(
         { "_id": job_id },
-        { "$set": { "state": state } }
+        { "$set": { "state": "ACTIVATED", "f7t_job_id": f7t_job_id } }
     )
     return response
 
@@ -90,3 +100,9 @@ def delete_job(job_id):
 
     response = db.jobs.delete_one( { "_id": ObjectId(job_id) } )
     return response
+
+def get_jobs(user_id):
+    """get jobs of the users"""
+    response = db.jobs.find({'user_id': user_id})
+    
+    return list(response)
