@@ -28,14 +28,23 @@ User: Create User
 - create_user
 """
 
-def create_user(email, name):
+def create_user(email, name, home):
     """Insert a user into the users collection, with the following fields:
     
     - "name": will be used as the folder name, any special charater will convert to `_`.
     - "email": email of user.
+    
+    email is the exclusive key, can not have two users with the same email.
+    If user already in the DB return it.
     """
-    user_info = {'name': name, 'email': email}
-    return db.users.insert_one(user_info)
+    user = db.users.find_one({'email': email})
+    if user:
+        return user
+    else:
+        user_info = {'name': name, 'email': email, 'home': home}
+        _id = db.users.insert_one(user_info).inserted_id
+        user = db.users.find_one({'_id': _id})
+        return user
 
 """
 Job: Create/Update/Delete/Get simulation jobs
@@ -59,7 +68,10 @@ def create_job(user_id, remote_folder, repository):
     """
     state = "CREATED"
     job_info = {'user_id': user_id, 'remote_folder': remote_folder, 'repository': repository, 'state': state}
-    return db.jobs.insert_one(job_info)
+    _id = db.jobs.insert_one(job_info).inserted_id
+    job = db.jobs.find_one({'_id': _id})
+    
+    return job
 
 def update_job(job_id, state):
     """Update job state.
