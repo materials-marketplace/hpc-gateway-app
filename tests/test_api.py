@@ -1,6 +1,7 @@
 import pytest
 from firecrest import Firecrest
 from types import MethodType
+from bson.objectid import ObjectId
 
 def test_index(client):
     response = client.get("/")
@@ -110,19 +111,52 @@ def test_create_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     job_id = response.json['jobid']
 
     assert response.status_code == 200
+    
+    job = mock_db.jobs.find_one({'_id': ObjectId(job_id)})
+    assert job.get("state") == "CREATED"
 
     # create another job
     client.post("/api/v1/job/create", headers=auth_header)
     
     # get jobs
     response = client.get("/api/v1/job/", headers=auth_header)
-    assert job_id in response.json
+    assert job_id in response.json['jobs']
     
-def test_launch_get_job():
+def test_launch_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_mock):
     """This test launch job to cluster and get job list by f7t."""
-    # # create another job
-    # client.post("/api/v1/job/create", header=auth_header)
+    client = app.test_client()
+    userinfo_url = app.config['MP_USERINFO_URL']
+    expected_f7t_job_id = '00001'
     
-    # # get jobs
-    # response = client.get("/api/v1/job/", header=auth_header)
-    # assert job_id in response.json
+    def mock_mkdir(cls, machine, target_path, p=None):
+        return "mkdir!"
+    
+    def mock_submit(cls, machine, job_script, local_file=False):
+        return {'jobid': expected_f7t_job_id}
+    
+    # monkeypatch the mkdir/submit operation of f7t
+    monkeypatch.setattr('firecrest.Firecrest.mkdir', MethodType(mock_mkdir, Firecrest))
+    monkeypatch.setattr('firecrest.Firecrest.submit', MethodType(mock_submit, Firecrest))
+
+    # moketpach the db
+    monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
+    
+    requests_mock.get(userinfo_url, json=userinfo, status_code=200)
+    
+    # create user
+    client.post("/api/v1/user/create", headers=auth_header)
+    
+    # create jobs
+    response = client.post("/api/v1/job/create", headers=auth_header)
+    job_id = response.json['jobid']
+
+    assert response.status_code == 200
+    
+    # launch the job
+    response = client.post(f"/api/v1/job/launch/{job_id}", headers=auth_header)
+    
+    assert response.status_code == 200
+    
+    job = mock_db.jobs.find_one({'_id': ObjectId(job_id)})
+    assert job.get("state") == "ACTIVATED"
+    assert job.get("f7t_job_id") == expected_f7t_job_id

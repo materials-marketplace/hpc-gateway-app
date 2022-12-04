@@ -77,32 +77,30 @@ def create_job(user_id, remote_folder):
         remote_folder (str): absolute path the remote folder name a uuid in user's repository folder
     """
     state = "CREATED"
-    job_info = {'user_id': user_id, 'remote_folder': remote_folder, 'state': state}
+    job_info = {'user_id': ObjectId(user_id), 'remote_folder': remote_folder, 'state': state}
     _id = db.jobs.insert_one(job_info).inserted_id
     job = db.jobs.find_one({'_id': _id})
     
     return job
 
-def update_job(job_id, f7t_job_id):
+def update_job(job_id: str, f7t_job_id: str):
     """Set the f7t job id and update job state to ACTIVATED
     """
-    
     response = db.jobs.update_one(
-        { "_id": job_id },
+        { "_id": ObjectId(job_id) },
         { "$set": { "state": "ACTIVATED", "f7t_job_id": f7t_job_id } }
     )
-    return response
+    job = db.jobs.find_one({'_id': ObjectId(job_id)})
+    return job
 
 def delete_job(job_id):
     """
     Given a job ID, deletes a job from the jobs collection
     """
-
     response = db.jobs.delete_one( { "_id": ObjectId(job_id) } )
-    return response
 
 def get_jobs(user_id):
     """get jobs of the users"""
-    response = db.jobs.find({'user_id': user_id})
+    response = db.jobs.find({'user_id': ObjectId(user_id)})
     
     return list(response)

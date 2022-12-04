@@ -3,7 +3,7 @@ import uuid
 
 from flask import Blueprint, jsonify, current_app
 
-from hpc_gateway.model.database import get_user, EntityNotFoundError, create_job, get_jobs
+from hpc_gateway.model.database import get_user, EntityNotFoundError, create_job, get_jobs, update_job
 from hpc_gateway.auth import token_required
 from hpc_gateway.model.f7t import create_f7t_client
 
@@ -13,12 +13,12 @@ job_api_v1 = Blueprint(
     'job_api_v1', 'job_api_v1', url_prefix='/api/v1/job'
 )
 
+JOB_SCRIPT_FILENAME = "_job.sh"
+
 @job_api_v1.route('/', methods=['GET'])
 @token_required
 def api_get_jobs(current_user):
     """get jobs from DB of the user."""
-    machine = current_app.config['MACHINE']
-        
     email = current_user.get("email")
     try:
         user = get_user(email)
@@ -33,9 +33,15 @@ def api_get_jobs(current_user):
         
     jobs = get_jobs(user_id)
     
+    # arrange output where the jobs is
+    # as dict of key: value -> _id: details
+    output_jobs = {}
+    for job in jobs:
+        output_jobs[str(job.get('_id'))] = job
+    
     return (
         jsonify(
-            jobs=jobs
+            jobs=output_jobs,
         )
     )
         
@@ -80,6 +86,13 @@ def api_create_job(current_user):
         f7t_client = create_f7t_client()
         f7t_client.mkdir(machine=machine, target_path=remote_folder)
         # create a script file and upload, the content is read from parameters
+        # job_script = create_job_script(
+        #     image=image, 
+        #     email=email, 
+        #     mpi_cmd=mpi_cmd, 
+        #     executable_cmd=executable_cmd
+        # )
+        # f7t_client.upload_file(job_script)
     except Exception as e:
         # faild to create job to remote folder
         return (
@@ -97,9 +110,48 @@ def api_create_job(current_user):
     
 
 @job_api_v1.route('/launch/<jobid>', methods=['POST'])
-def api_launch_job(jobid):
+@token_required
+def api_launch_job(current_user, jobid):
     """launch the job."""
-    pass
+    machine = current_app.config['MACHINE']
+        
+    email = current_user.get("email")
+
+    try:
+        user = get_user(email)
+    except EntityNotFoundError:
+        return (
+            jsonify(
+                error=f"We can not find your are registered."
+            ), 500
+        )
+    else:
+        user_home = user.get('home')
+    
+    fd = str(uuid.uuid4())  # the remote folder name of this job
+    remote_folder = os.path.join(user_home, fd)
+    
+    try:
+        f7t_client = create_f7t_client()
+        response = f7t_client.submit(
+            machine=machine, job_script=os.path.join(remote_folder, JOB_SCRIPT_FILENAME), local_file=False
+        )
+        f7t_job_id = response.get("jobid")
+    except Exception as e:
+        # faild to create job to remote folder
+        return (
+            jsonify(
+                error=f"unable to submit job in machine {machine}.",
+            ), 600
+        )
+    else:
+        job = update_job(job_id=jobid, f7t_job_id=f7t_job_id)
+        return (
+            jsonify(
+                jobid=job['_id'],
+            ), 200
+        )
+    
 
 @job_api_v1.route('/cancel/<jobid>', methods=['POST'])
 def api_cancel_job(jobid):
