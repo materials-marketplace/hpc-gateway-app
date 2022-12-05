@@ -107,7 +107,7 @@ def get_jobs(user_id):
     
     return list(response)
 
-def get_job(user_id, job_id):
-    job = db.jobs.find_one({'_id': ObjectId(job_id), 'user_id': ObjectId(user_id)})
+def get_job(job_id):
+    job = db.jobs.find_one({'_id': ObjectId(job_id)})
     
     return job

@@ -160,21 +160,8 @@ def api_cancel_job(current_user, jobid):
     Simply send a f7t signal and do nothing to the DB entity.
     """
     machine = current_app.config['MACHINE']
-        
-    email = current_user.get("email")
-
-    try:
-        user = get_user(email)
-    except EntityNotFoundError:
-        return (
-            jsonify(
-                error=f"We can not find your are registered."
-            ), 500
-        )
-    else:
-        user_id = user.get('_id')
     
-    job = get_job(user_id, jobid)
+    job = get_job(jobid)
     if job.get('state') != 'ACTIVATED':
         return (
             jsonify(

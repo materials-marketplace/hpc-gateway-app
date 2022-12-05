@@ -410,34 +410,34 @@ def list_jobs(current_user):
     )
 
 
-# @app.route("/download/<resourceid>", methods=["GET"])
-# @token_required
-# def download_remote(current_user, resourceid):
-#     """
-#     Downloads the remote files from the cluster.
-#     :param path: path string relative to the parent ROOT_PATH=`/scratch/snx3000/jyu/firecrest/`
-#     :return: file.
-#     """
-#     repo = email2repo(current_user["email"])
+@app.route("/download/<resourceid>", methods=["GET"])
+@token_required
+def download_remote(current_user, resourceid):
+    """
+    Downloads the remote files from the cluster.
+    :param path: path string relative to the parent ROOT_PATH=`/scratch/snx3000/jyu/firecrest/`
+    :return: file.
+    """
+    repo = email2repo(current_user["email"])
 
-#     data = request.json
-#     filename = data.get("filename")
-#     source_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
-#     app.logger.debug(source_path)
-#     binary_stream = io.BytesIO()
+    data = request.json
+    filename = data.get("filename")
+    source_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
+    app.logger.debug(source_path)
+    binary_stream = io.BytesIO()
 
-#     try:
-#         f7t_client.simple_download(
-#             machine=MACHINE, source_path=source_path, target_path=binary_stream
-#         )
+    try:
+        f7t_client.simple_download(
+            machine=MACHINE, source_path=source_path, target_path=binary_stream
+        )
 
-#         download_name = os.path.basename(filename)
-#         binary_stream.seek(0)  # buffer position from start
-#         resp = send_file(path_or_file=binary_stream, download_name=download_name)
-#     except Exception as exc:
-#         return {"message": f"Failed with {exc}"}, 402
-#     else:
-#         return resp, 200
+        download_name = os.path.basename(filename)
+        binary_stream.seek(0)  # buffer position from start
+        resp = send_file(path_or_file=binary_stream, download_name=download_name)
+    except Exception as exc:
+        return {"message": f"Failed with {exc}"}, 402
+    else:
+        return resp, 200
 
 
 # @app.route("/list/<resourceid>", methods=["GET"])
@@ -467,80 +467,80 @@ def list_jobs(current_user):
 #         )
 
 
-# @app.route("/upload/<resourceid>", methods=["PUT"])
-# @token_required
-# def upload_remote(current_user, resourceid):
-#     """
-#     Upload the file to the cluster. to folder EXEC_HOME_FOLDER
-#     """
-#     repo = email2repo(current_user["email"])
+@app.route("/upload/<resourceid>", methods=["PUT"])
+@token_required
+def upload_remote(current_user, resourceid):
+    """
+    Upload the file to the cluster. to folder EXEC_HOME_FOLDER
+    """
+    repo = email2repo(current_user["email"])
 
-#     if "file" not in request.files:
-#         flash("No file part")
-#         return (
-#             jsonify({"message": "No file part", "error": str("error"), "data": None}),
-#             403,
-#         )
+    if "file" not in request.files:
+        flash("No file part")
+        return (
+            jsonify({"message": "No file part", "error": str("error"), "data": None}),
+            403,
+        )
 
-#     file = request.files["file"]
-#     target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
+    file = request.files["file"]
+    target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid)
 
-#     if file and allowed_file(file.filename):
-#         filename = secure_filename(file.filename)
-#         binary_stream = io.BytesIO(file.read())
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        binary_stream = io.BytesIO(file.read())
 
-#         try:
-#             f7t_client.simple_upload(
-#                 machine=MACHINE,
-#                 source_path=binary_stream,
-#                 target_path=target_path,
-#                 filename=filename,
-#             )
-#         except Exception as exc:
-#             return (
-#                 jsonify(
-#                     error="file upload failed.",
-#                     message=str(exc),
-#                 ),
-#                 401,
-#             )
-#         else:
-#             return jsonify(message=f"Upload {filename} to remote folder."), 200
+        try:
+            f7t_client.simple_upload(
+                machine=MACHINE,
+                source_path=binary_stream,
+                target_path=target_path,
+                filename=filename,
+            )
+        except Exception as exc:
+            return (
+                jsonify(
+                    error="file upload failed.",
+                    message=str(exc),
+                ),
+                401,
+            )
+        else:
+            return jsonify(message=f"Upload {filename} to remote folder."), 200
 
 
-# @app.route("/delete/<resourceid>", methods=["DELETE"])
-# @token_required
-# def delete_remote(current_user, resourceid):
-#     """
-#     Will be map to deleteDataset Downloads the remote files from the cluster.
-#     This is for delete a singlefile in the resource.
+@app.route("/delete/<resourceid>", methods=["DELETE"])
+@token_required
+def delete_remote(current_user, resourceid):
+    """
+    Will be map to deleteDataset Downloads the remote files from the cluster.
+    This is for delete a singlefile in the resource.
 
-#     :param path: path string relative to the parent ROOT_PATH=`/scratch/snx3000/jyu/firecrest/`
-#     :return: file.
-#     """
-#     repo = email2repo(current_user["email"])
+    :param path: path string relative to the parent ROOT_PATH=`/scratch/snx3000/jyu/firecrest/`
+    :return: file.
+    """
+    repo = email2repo(current_user["email"])
 
-#     data = request.json
-#     filename = data.get("filename")
-#     target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
+    data = request.json
+    filename = data.get("filename")
+    target_path = os.path.join(EXEC_HOME_FOLDER, repo, resourceid, filename)
 
-#     try:
-#         f7t_client.simple_delete(machine=MACHINE, target_path=target_path)
-#     except Exception as e:
-#         return (
-#             jsonify(
-#                 error=f"Delete remote file {filename} of repo {resourceid} failed",
-#                 message=str(e),
-#             ),
-#             402,
-#         )
-#     else:
-#         return (
-#             jsonify(
-#                 message=f"Delete the remote file {filename} from {resourceid}",
-#             ),
-#             200,
-#         )
+    try:
+        f7t_client.simple_delete(machine=MACHINE, target_path=target_path)
+    except Exception as e:
+        return (
+            jsonify(
+                error=f"Delete remote file {filename} of repo {resourceid} failed",
+                message=str(e),
+            ),
+            402,
+        )
+    else:
+        return (
+            jsonify(
+                message=f"Delete the remote file {filename} from {resourceid}",
+            ),
+            200,
+        )
 
 
 # formatter is executed for every log

@@ -8,5 +8,13 @@ def test_f7t_default(app):
         all_system = f7t_client.all_systems()
         
         assert all_system[0].get("status") == "available"
+        
+def test_f7t_list_scratch(app):
+    """call files list of scratch"""
+    with app.app_context():
+        f7t_client = create_f7t_client()
+        file_list = f7t_client.list_files(machine='daint', target_path='/scratch')
+        
+        assert file_list is not None
     
     
