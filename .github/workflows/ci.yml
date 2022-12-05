@@ -41,7 +41,10 @@ jobs:
                   python-version: ${{ matrix.python-version }}
 
             - name: Install dependencies for test
-              run: pip install -e .[dev]
+              run: pip install -e .[deploy,dev]
 
             - name: run pytest
-              run: F7T_SECRET={{ secrets.F7T_SECRET }} pytest -v tests/
+              run: pytest -v tests/
+              env:
+                  F7T_SECRET: ${{ secrets.F7T_SECRET }}
+                  F7T_CLIENT_ID: ${{ secrets.F7T_CLIENT_ID }}
