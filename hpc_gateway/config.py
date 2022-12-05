@@ -42,7 +42,7 @@ class TestingConfig(Config):
     CLUSTER_HOME = '/scratch/f7t'
     MACHINE = 'daint'
     
-    F7T_CLIENT_ID = "firecrest-jyu-marketplace"
+    F7T_CLIENT_ID = os.environ.get("F7T_CLIENT_ID")
     F7T_CLIENT_SECRET = os.environ.get("F7T_SECRET")
     F7T_AUTH_URL="https://firecrest.cscs.ch"
     F7T_TOKEN_URL="https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"

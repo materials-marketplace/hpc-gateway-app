@@ -1,14 +1,10 @@
 """This module serve as the model of the HPC gateway to interafcing for the
 users and jobs collection of the DB."""
 
-import bson
-
 from flask import current_app, g
 from werkzeug.local import LocalProxy
 from flask_pymongo import PyMongo
-from pymongo.errors import DuplicateKeyError, OperationFailure
 from bson.objectid import ObjectId
-from bson.errors import InvalidId
 
 class EntityNotFoundError(Exception):
     """raised when entity not in db."""

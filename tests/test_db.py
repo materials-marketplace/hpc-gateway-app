@@ -2,12 +2,17 @@ import uuid
 import pytest
 import os
 from hpc_gateway.model import database
+from bson.objectid import ObjectId
 
 @pytest.fixture()
 def remote_folder():
     fd = os.path.join('/tmp', str(uuid.uuid4()))
 
     return fd
+
+@pytest.fixture()
+def user_id():
+    return ObjectId('0123456789ab0123456789ab')
 
 def test_create_and_get_user(monkeypatch, mock_db):
     monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
@@ -39,10 +44,8 @@ def test_create_user_exist(monkeypatch, mock_db):
     # the original user returned.
     assert user2['name'] == name
     
-def test_create_job(monkeypatch, mock_db, remote_folder):
+def test_create_job(monkeypatch, mock_db, remote_folder, user_id):
     monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
-    
-    user_id = 'an_id_for_test'
     
     job = database.create_job(user_id, remote_folder)
     find_job = mock_db.jobs.find_one({"remote_folder": remote_folder})
@@ -51,11 +54,9 @@ def test_create_job(monkeypatch, mock_db, remote_folder):
     assert find_job['state'] == 'CREATED'
     assert find_job['remote_folder'] == remote_folder
     
-def test_update_job(monkeypatch, mock_db, remote_folder):
+def test_update_job(monkeypatch, mock_db, remote_folder, user_id):
     monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
     
-    user_id = 'an_id_for_test'
-
     job = database.create_job(user_id, remote_folder)
     job_id = job.get('_id')
     
@@ -68,10 +69,8 @@ def test_update_job(monkeypatch, mock_db, remote_folder):
     assert find_job['f7t_job_id'] == f7t_job_id
 
 
-def test_delete_job(monkeypatch, mock_db, remote_folder):
+def test_delete_job(monkeypatch, mock_db, remote_folder, user_id):
     monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
-    
-    user_id = 'an_id_for_test'
     
     job = database.create_job(user_id, remote_folder)
     job_id = job.get('_id')
@@ -82,10 +81,8 @@ def test_delete_job(monkeypatch, mock_db, remote_folder):
     
     assert count_before_delete - count_after_delete == 1
     
-def test_get_jobs(monkeypatch, mock_db, remote_folder):
+def test_get_jobs(monkeypatch, mock_db, remote_folder, user_id):
     monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
-    
-    user_id = 'an_id_for_test'
     
     database.create_job(user_id, remote_folder)
     database.create_job(user_id, remote_folder)
