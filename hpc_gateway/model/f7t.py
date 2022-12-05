@@ -1,15 +1,17 @@
-from flask import current_app
-import firecrest as f7t
 import pathlib
 from contextlib import nullcontext
+
+import firecrest as f7t
 import requests
+from flask import current_app
+
 
 def create_f7t_client():
     client_id = current_app.config["F7T_CLIENT_ID"]
     client_secret = current_app.config["F7T_CLIENT_SECRET"]
     token_url = current_app.config["F7T_TOKEN_URL"]
     auth_url = current_app.config["F7T_AUTH_URL"]
-    
+
     # Create an authorization object with Client Credentials authorization grant
     keycloak = f7t.ClientCredentialsAuth(
         client_id,
@@ -18,11 +20,10 @@ def create_f7t_client():
     )
 
     # Setup the client for the specific account
-    client = Firecrest(
-        firecrest_url=auth_url, authorization=keycloak
-    )
-    
+    client = Firecrest(firecrest_url=auth_url, authorization=keycloak)
+
     return client
+
 
 # Create an authorization object with Client Credentials authorization grant
 class HardCodeTokenAuth:
@@ -34,7 +35,6 @@ class HardCodeTokenAuth:
 
 
 class Firecrest(f7t.Firecrest):
-
     def simple_upload(self, machine, source_path, target_path, filename):
         """Blocking call to upload a small file.
         The file that will be uploaded will have the same name as the source_path.

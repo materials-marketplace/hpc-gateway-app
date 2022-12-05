@@ -1,14 +1,14 @@
 import os
+from datetime import datetime
 
+from bson import ObjectId, json_util
 from flask import Flask, render_template
 from flask.json import JSONEncoder
-
-from bson import json_util, ObjectId
-from datetime import datetime, timedelta
 
 from hpc_gateway.api.file import file_api_v1
 from hpc_gateway.api.job import job_api_v1
 from hpc_gateway.api.user import user_api_v1
+
 
 class MongoJsonEncoder(JSONEncoder):
     def default(self, obj):
@@ -18,21 +18,24 @@ class MongoJsonEncoder(JSONEncoder):
             return str(obj)
         return json_util.default(obj, json_util.CANONICAL_JSON_OPTIONS)
 
+
 def create_app():
     APP_DIR = os.path.abspath(os.path.dirname(__file__))
-    STATIC_FOLDER = os.path.join(APP_DIR, 'build/static')
-    TEMPLATE_FOLDER = os.path.join(APP_DIR, 'build')
+    STATIC_FOLDER = os.path.join(APP_DIR, "build/static")
+    TEMPLATE_FOLDER = os.path.join(APP_DIR, "build")
 
-    app = Flask(__name__, static_folder=STATIC_FOLDER,
-                template_folder=TEMPLATE_FOLDER,
-                )
+    app = Flask(
+        __name__,
+        static_folder=STATIC_FOLDER,
+        template_folder=TEMPLATE_FOLDER,
+    )
     app.json_encoder = MongoJsonEncoder
     app.register_blueprint(file_api_v1)
     app.register_blueprint(job_api_v1)
     app.register_blueprint(user_api_v1)
 
-    @app.route('/')
+    @app.route("/")
     def serve():
-        return render_template('index.html')
+        return render_template("index.html")
 
     return app

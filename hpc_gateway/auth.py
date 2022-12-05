@@ -1,15 +1,15 @@
-import os
 from functools import wraps
 
 import requests
+from flask import current_app, jsonify, request
 from requests.exceptions import ConnectionError
-from flask import jsonify, request, current_app
+
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        userinfo_url = current_app.config['MP_USERINFO_URL']
+        userinfo_url = current_app.config["MP_USERINFO_URL"]
         if "Authorization" in request.headers:
             token = request.headers["Authorization"].split(" ")[1]
         if not token:
