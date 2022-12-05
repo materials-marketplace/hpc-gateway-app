@@ -160,3 +160,56 @@ def test_launch_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     job = mock_db.jobs.find_one({'_id': ObjectId(job_id)})
     assert job.get("state") == "ACTIVATED"
     assert job.get("f7t_job_id") == expected_f7t_job_id
+    
+def test_cancel_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_mock):
+    """This test launch job to cluster and get job list by f7t."""
+    client = app.test_client()
+    userinfo_url = app.config['MP_USERINFO_URL']
+    expected_f7t_job_id = '00001'
+    
+    def mock_mkdir(cls, machine, target_path, p=None):
+        return "mkdir!"
+    
+    def mock_submit(cls, machine, job_script, local_file=False):
+        return {'jobid': expected_f7t_job_id}
+    
+    def mock_cancel(cls, machine, job_id):
+        return 'cancel!'
+    
+    # monkeypatch the mkdir/submit/cancel operation of f7t
+    monkeypatch.setattr('firecrest.Firecrest.mkdir', MethodType(mock_mkdir, Firecrest))
+    monkeypatch.setattr('firecrest.Firecrest.submit', MethodType(mock_submit, Firecrest))
+    monkeypatch.setattr('firecrest.Firecrest.cancel', MethodType(mock_cancel, Firecrest))
+
+    # moketpach the db
+    monkeypatch.setattr('hpc_gateway.model.database.db', mock_db)
+    
+    requests_mock.get(userinfo_url, json=userinfo, status_code=200)
+    
+    # create user
+    client.post("/api/v1/user/create", headers=auth_header)
+    
+    # create jobs
+    response = client.post("/api/v1/job/create", headers=auth_header)
+    job_id = response.json['jobid']
+
+    assert response.status_code == 200
+    
+    # test cancel but failed
+    response = client.delete(f"/api/v1/job/cancel/{job_id}", headers=auth_header)
+    
+    assert response.status_code == 505
+    
+    # launch the job
+    response = client.post(f"/api/v1/job/launch/{job_id}", headers=auth_header)
+    
+    assert response.status_code == 200
+    
+    job = mock_db.jobs.find_one({'_id': ObjectId(job_id)})
+    assert job.get("state") == "ACTIVATED"
+    assert job.get("f7t_job_id") == expected_f7t_job_id
+    
+    # cancel again and it works
+    response = client.delete(f"/api/v1/job/cancel/{job_id}", headers=auth_header)
+    
+    assert response.status_code == 200

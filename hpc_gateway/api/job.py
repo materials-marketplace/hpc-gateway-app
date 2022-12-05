@@ -3,7 +3,7 @@ import uuid
 
 from flask import Blueprint, jsonify, current_app
 
-from hpc_gateway.model.database import get_user, EntityNotFoundError, create_job, get_jobs, update_job
+from hpc_gateway.model.database import get_user, EntityNotFoundError, create_job, get_jobs, update_job, get_job
 from hpc_gateway.auth import token_required
 from hpc_gateway.model.f7t import create_f7t_client
 
@@ -153,10 +153,54 @@ def api_launch_job(current_user, jobid):
         )
     
 
-@job_api_v1.route('/cancel/<jobid>', methods=['POST'])
-def api_cancel_job(jobid):
-    """cancel the job."""
-    pass
+@job_api_v1.route('/cancel/<jobid>', methods=['DELETE'])
+@token_required
+def api_cancel_job(current_user, jobid):
+    """cancel the job, by call cancel f7t operation.
+    Simply send a f7t signal and do nothing to the DB entity.
+    """
+    machine = current_app.config['MACHINE']
+        
+    email = current_user.get("email")
+
+    try:
+        user = get_user(email)
+    except EntityNotFoundError:
+        return (
+            jsonify(
+                error=f"We can not find your are registered."
+            ), 500
+        )
+    else:
+        user_id = user.get('_id')
+    
+    job = get_job(user_id, jobid)
+    if job.get('state') != 'ACTIVATED':
+        return (
+            jsonify(
+                error=f"Job {jobid} not launched yet.",
+            ), 505
+        )
+    
+    try:
+        f7t_client = create_f7t_client()
+        f7t_job_id = job.get("f7t_job_id")
+        f7t_client.cancel(
+            machine=machine, job_id=f7t_job_id,
+        )
+    except Exception as e:
+        # faild to create job to remote folder
+        return (
+            jsonify(
+                error=f"unable to cancel job in machine {machine}.",
+            ), 600
+        )
+    else:
+        return (
+            jsonify(
+                message=f"Send cancelling signal to job-{jobid}, of f7t job id={f7t_job_id}",
+            ), 200
+        )
 
 @job_api_v1.route('/delete/<jobid>', methods=['DELETE'])
 def api_delete_job(jobid):

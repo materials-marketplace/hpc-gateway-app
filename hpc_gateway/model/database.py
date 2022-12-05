@@ -67,6 +67,8 @@ Job: Create/Update/Delete/Get simulation jobs
     - CREATED: the job created but not launched
     - ATTACHED: the job has been trigger to run, there is no real state stored since
         the real state is read from remote on the fly by f7t.
+- get_jobs
+- get_job
 """
 
 def create_job(user_id, remote_folder):
@@ -104,3 +106,8 @@ def get_jobs(user_id):
     response = db.jobs.find({'user_id': ObjectId(user_id)})
     
     return list(response)
+
+def get_job(user_id, job_id):
+    job = db.jobs.find_one({'_id': ObjectId(job_id), 'user_id': ObjectId(user_id)})
+    
+    return job

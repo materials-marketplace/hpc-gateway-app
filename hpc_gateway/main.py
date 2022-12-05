@@ -306,39 +306,39 @@ def run_job(current_user, resourceid):
         )
 
 
-# # still use resourceid for job manipulation it will map to the jobid internally
-# @app.route("/jobs/cancel/<resourceid>", methods=["POST"])
-# @token_required
-# def cancel_job(current_user, resourceid):
-#     """cancel job from the folder and return jobid"""
-#     try:
-#         user = User().get_by_email(current_user["email"])
-#         userid = user["_id"]
-#         jobid = (
-#             Jobs()
-#             .get_by_userid_and_resourceid(userid=userid, resourceid=resourceid)
-#             .get("jobid")
-#         )
+# still use resourceid for job manipulation it will map to the jobid internally
+@app.route("/jobs/cancel/<resourceid>", methods=["POST"])
+@token_required
+def cancel_job(current_user, resourceid):
+    """cancel job from the folder and return jobid"""
+    try:
+        user = User().get_by_email(current_user["email"])
+        userid = user["_id"]
+        jobid = (
+            Jobs()
+            .get_by_userid_and_resourceid(userid=userid, resourceid=resourceid)
+            .get("jobid")
+        )
 
-#         app.logger.debug(userid)
-#         app.logger.debug(jobid)
+        app.logger.debug(userid)
+        app.logger.debug(jobid)
 
-#         # resp = f7t_client.cancel(machine=MACHINE, job_id=jobid)
+        # resp = f7t_client.cancel(machine=MACHINE, job_id=jobid)
 
-#         # update the state of job entity in db, state to cancel.
-#         Jobs().update(jobid=jobid, state="cancel")
+        # update the state of job entity in db, state to cancel.
+        Jobs().update(jobid=jobid, state="cancel")
 
-#     except Exception as e:
-#         return {
-#             "function": "cancel",
-#             "error": "Something went wrong",
-#             "message": str(e),
-#         }, 500
-#     else:
-#         return (
-#             jsonify(func="cancel", message=f"cancel jobid {jobid} of {resourceid}."),
-#             200,
-#         )
+    except Exception as e:
+        return {
+            "function": "cancel",
+            "error": "Something went wrong",
+            "message": str(e),
+        }, 500
+    else:
+        return (
+            jsonify(func="cancel", message=f"cancel jobid {jobid} of {resourceid}."),
+            200,
+        )
 
 
 # @app.route("/jobs/delete/<resourceid>", methods=["DELETE"])
