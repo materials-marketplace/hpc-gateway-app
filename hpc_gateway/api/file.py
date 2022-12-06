@@ -49,7 +49,7 @@ def api_fetch_file_from_repo(current_user, jobid, filename):
         return (
             jsonify(
                 error="unable to download file.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             500,
         )
@@ -75,7 +75,7 @@ def api_list_repo(current_user, jobid):
         return (
             jsonify(
                 error="unable to upload file to job folder.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             500,
         )
@@ -112,7 +112,7 @@ def api_push_file_to_repo(current_user, jobid):
         return (
             jsonify(
                 error="unable to upload file to job folder.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             500,
         )
@@ -146,7 +146,7 @@ def api_delete_file_from_repo(current_user, jobid, filename):
         return (
             jsonify(
                 error="unable to delete file.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             500,
         )

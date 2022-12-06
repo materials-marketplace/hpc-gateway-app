@@ -2,10 +2,11 @@ import os
 from datetime import datetime
 
 from bson import ObjectId, json_util
-from flask import Flask, render_template
+from flask import Flask, Response, render_template
 from flask.json import JSONEncoder
 
 from hpc_gateway.api.file import file_api_v1
+from hpc_gateway.api.image import image_api_v1
 from hpc_gateway.api.job import job_api_v1
 from hpc_gateway.api.user import user_api_v1
 
@@ -33,9 +34,18 @@ def create_app():
     app.register_blueprint(file_api_v1)
     app.register_blueprint(job_api_v1)
     app.register_blueprint(user_api_v1)
+    app.register_blueprint(image_api_v1)
 
     @app.route("/")
     def serve():
         return render_template("index.html")
+
+    @app.route("/heartbeat")
+    def heartbeat():
+        return Response(
+            "HPC-gateway-App : application running.",
+            status=200,
+            mimetype="text/plain",
+        )
 
     return app

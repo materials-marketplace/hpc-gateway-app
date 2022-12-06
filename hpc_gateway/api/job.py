@@ -94,7 +94,7 @@ def api_create_job(current_user):
         return (
             jsonify(
                 error=f"unable to create job in machine {machine}.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             500,
         )
@@ -139,7 +139,7 @@ def api_launch_job(current_user, jobid):
         return (
             jsonify(
                 error=f"unable to submit job in machine {machine}.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             600,
         )
@@ -182,7 +182,7 @@ def api_cancel_job(current_user, jobid):
         return (
             jsonify(
                 error=f"unable to cancel job in machine {machine}.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             600,
         )

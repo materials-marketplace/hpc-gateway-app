@@ -39,12 +39,12 @@ def api_create_user(current_user):
     # f7t operation
     try:
         f7t_client = create_f7t_client()
-        f7t_client.mkdir(machine=machine, target_path=user_home)
+        f7t_client.mkdir(machine=machine, target_path=user_home, p=True)
     except Exception as e:
         return (
             jsonify(
                 error=f"mkdir {user_home} on {machine} fail.",
-                except_type=type(e),
+                except_type=str(type(e)),
             ),
             501,
         )
