@@ -1,0 +1,21 @@
+#!/bin/bash -l
+#SBATCH --job-name="{{ job_name }}"
+#SBATCH --account="mrcloud"
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jusong.yu@epfl.ch,{{ email }}
+#SBATCH --time=00:10:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --ntasks-per-node={{ ntasks_per_node }}
+#SBATCH --cpus-per-task=1
+#SBATCH --partition={{ partition }}
+#SBATCH --constraint=mc
+#SBATCH --hint=nomultithread
+
+module load daint-mc
+module load singularity/3.6.4-daint
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+
+srun -n {{ ntasks_per_node }} singularity run --bind $PWD:$PWD {{ image }} {{ executable_cmd }}

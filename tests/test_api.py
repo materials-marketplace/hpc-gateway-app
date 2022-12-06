@@ -40,6 +40,21 @@ def userinfo():
     return info
 
 
+@pytest.fixture()
+def job_json():
+    """json data for creating the job"""
+    job_info = {
+        "job_name": "job00",
+        "email": "a@b.c",
+        "ntasks_per_node": 2,
+        "partition": "debug",
+        "image": "docker://alpine:latest",
+        "executable_cmd": "bash -n",
+    }
+
+    return job_info
+
+
 # test of user API
 def test_create_user(app, requests_mock, monkeypatch, mock_db, auth_header, userinfo):
     """Mock the f7t mkdir operation and create a db, we don't want
@@ -65,57 +80,23 @@ def test_create_user(app, requests_mock, monkeypatch, mock_db, auth_header, user
 
 
 # test job APIs
-def test_create_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_mock):
+def test_create_job(
+    app, auth_header, userinfo, mock_db, monkeypatch, requests_mock, job_json
+):
     client = app.test_client()
     userinfo_url = app.config["MP_USERINFO_URL"]
 
     def mock_mkdir(cls, machine, target_path, p=None):
         return "mkdir!"
+
+    def mock_simple_upload(cls, machine, source_path, target_path, filename):
+        return "simple_upload!"
 
     # monkeypatch the mkdir operation of f7t
     monkeypatch.setattr("firecrest.Firecrest.mkdir", MethodType(mock_mkdir, Firecrest))
-
-    # moketpach the db
-    monkeypatch.setattr("hpc_gateway.model.database.db", mock_db)
-
-    requests_mock.get(userinfo_url, json=userinfo, status_code=200)
-
-    # create user
-    client.post("/api/v1/user/create", headers=auth_header)
-
-    # create jobs
-    response = client.post("/api/v1/job/create", headers=auth_header)
-    job_id = response.json["jobid"]
-
-    assert response.status_code == 200
-
-    job = mock_db.jobs.find_one({"_id": ObjectId(job_id)})
-    assert job.get("state") == "CREATED"
-
-    # create another job
-    client.post("/api/v1/job/create", headers=auth_header)
-
-    # get jobs
-    response = client.get("/api/v1/job/", headers=auth_header)
-    assert job_id in response.json["jobs"]
-
-
-def test_launch_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_mock):
-    """This test launch job to cluster and get job list by f7t."""
-    client = app.test_client()
-    userinfo_url = app.config["MP_USERINFO_URL"]
-    expected_f7t_job_id = "00001"
-
-    def mock_mkdir(cls, machine, target_path, p=None):
-        return "mkdir!"
-
-    def mock_submit(cls, machine, job_script, local_file=False):
-        return {"jobid": expected_f7t_job_id}
-
-    # monkeypatch the mkdir/submit operation of f7t
-    monkeypatch.setattr("firecrest.Firecrest.mkdir", MethodType(mock_mkdir, Firecrest))
     monkeypatch.setattr(
-        "firecrest.Firecrest.submit", MethodType(mock_submit, Firecrest)
+        "hpc_gateway.model.f7t.Firecrest.simple_upload",
+        MethodType(mock_simple_upload, Firecrest),
     )
 
     # moketpach the db
@@ -127,7 +108,59 @@ def test_launch_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     client.post("/api/v1/user/create", headers=auth_header)
 
     # create jobs
-    response = client.post("/api/v1/job/create", headers=auth_header)
+    response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
+    assert response.status_code == 200
+
+    job_id = response.json["jobid"]
+
+    job = mock_db.jobs.find_one({"_id": ObjectId(job_id)})
+    assert job.get("state") == "CREATED"
+
+    # create another job
+    client.post("/api/v1/job/create", headers=auth_header, json=job_json)
+
+    # get jobs
+    response = client.get("/api/v1/job/", headers=auth_header)
+    assert job_id in response.json["jobs"]
+
+
+def test_launch_job(
+    app, auth_header, userinfo, mock_db, monkeypatch, requests_mock, job_json
+):
+    """This test launch job to cluster and get job list by f7t."""
+    client = app.test_client()
+    userinfo_url = app.config["MP_USERINFO_URL"]
+    expected_f7t_job_id = "00001"
+
+    def mock_mkdir(cls, machine, target_path, p=None):
+        return "mkdir!"
+
+    def mock_submit(cls, machine, job_script, local_file=False):
+        return {"jobid": expected_f7t_job_id}
+
+    def mock_simple_upload(cls, machine, source_path, target_path, filename):
+        return "simple_upload!"
+
+    # monkeypatch the mkdir/submit operation of f7t
+    monkeypatch.setattr("firecrest.Firecrest.mkdir", MethodType(mock_mkdir, Firecrest))
+    monkeypatch.setattr(
+        "firecrest.Firecrest.submit", MethodType(mock_submit, Firecrest)
+    )
+    monkeypatch.setattr(
+        "hpc_gateway.model.f7t.Firecrest.simple_upload",
+        MethodType(mock_simple_upload, Firecrest),
+    )
+
+    # moketpach the db
+    monkeypatch.setattr("hpc_gateway.model.database.db", mock_db)
+
+    requests_mock.get(userinfo_url, json=userinfo, status_code=200)
+
+    # create user
+    client.post("/api/v1/job/create", headers=auth_header, json=job_json)
+
+    # create jobs
+    response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
     job_id = response.json["jobid"]
 
     assert response.status_code == 200
@@ -142,7 +175,9 @@ def test_launch_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     assert job.get("f7t_job_id") == expected_f7t_job_id
 
 
-def test_cancel_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_mock):
+def test_cancel_job(
+    app, auth_header, userinfo, mock_db, monkeypatch, requests_mock, job_json
+):
     """This test launch job to cluster and get job list by f7t."""
     client = app.test_client()
     userinfo_url = app.config["MP_USERINFO_URL"]
@@ -157,6 +192,9 @@ def test_cancel_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     def mock_cancel(cls, machine, job_id):
         return "cancel!"
 
+    def mock_simple_upload(cls, machine, source_path, target_path, filename):
+        return "simple_upload!"
+
     # monkeypatch the mkdir/submit/cancel operation of f7t
     monkeypatch.setattr("firecrest.Firecrest.mkdir", MethodType(mock_mkdir, Firecrest))
     monkeypatch.setattr(
@@ -164,6 +202,10 @@ def test_cancel_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     )
     monkeypatch.setattr(
         "firecrest.Firecrest.cancel", MethodType(mock_cancel, Firecrest)
+    )
+    monkeypatch.setattr(
+        "hpc_gateway.model.f7t.Firecrest.simple_upload",
+        MethodType(mock_simple_upload, Firecrest),
     )
 
     # moketpach the db
@@ -175,7 +217,7 @@ def test_cancel_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     client.post("/api/v1/user/create", headers=auth_header)
 
     # create jobs
-    response = client.post("/api/v1/job/create", headers=auth_header)
+    response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
     job_id = response.json["jobid"]
 
     assert response.status_code == 200
@@ -200,7 +242,9 @@ def test_cancel_job(app, auth_header, userinfo, mock_db, monkeypatch, requests_m
     assert response.status_code == 200
 
 
-def test_list_job_repo(app, auth_header, userinfo, mock_db, monkeypatch, requests_mock):
+def test_list_job_repo(
+    app, auth_header, userinfo, mock_db, monkeypatch, requests_mock, job_json
+):
     """This test launch job to cluster and get job list by f7t."""
     from hpc_gateway.api.job import JOB_SCRIPT_FILENAME
 
@@ -212,6 +256,9 @@ def test_list_job_repo(app, auth_header, userinfo, mock_db, monkeypatch, request
 
     def mock_submit(cls, machine, job_script, local_file=False):
         return {"jobid": "00001"}
+
+    def mock_simple_upload(cls, machine, source_path, target_path, filename):
+        return "simple_upload!"
 
     def mock_list_files(cls, machine, target_path):
         return [
@@ -239,7 +286,7 @@ def test_list_job_repo(app, auth_header, userinfo, mock_db, monkeypatch, request
                 "group": "user",
                 "last_modified": "2022-12-03T09:17:51",
                 "link_target": "",
-                "name": "_job.sh",
+                "name": "job.sh",
                 "permissions": "rwxr-xr-x",
                 "size": "20480",
                 "type": "f",
@@ -255,6 +302,10 @@ def test_list_job_repo(app, auth_header, userinfo, mock_db, monkeypatch, request
     monkeypatch.setattr(
         "firecrest.Firecrest.list_files", MethodType(mock_list_files, Firecrest)
     )
+    monkeypatch.setattr(
+        "hpc_gateway.model.f7t.Firecrest.simple_upload",
+        MethodType(mock_simple_upload, Firecrest),
+    )
 
     # moketpach the db
     monkeypatch.setattr("hpc_gateway.model.database.db", mock_db)
@@ -265,7 +316,7 @@ def test_list_job_repo(app, auth_header, userinfo, mock_db, monkeypatch, request
     client.post("/api/v1/user/create", headers=auth_header)
 
     # create jobs
-    response = client.post("/api/v1/job/create", headers=auth_header)
+    response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
     job_id = response.json["jobid"]
 
     assert response.status_code == 200
@@ -278,7 +329,13 @@ def test_list_job_repo(app, auth_header, userinfo, mock_db, monkeypatch, request
 
 
 def test_file_operations_repo(
-    app, auth_header, userinfo, mock_db, monkeypatch, requests_mock
+    app,
+    auth_header,
+    userinfo,
+    mock_db,
+    monkeypatch,
+    requests_mock,
+    job_json,
 ):
     """This test launch job to cluster and get job list by f7t."""
     _dummy_filename = "dummy.in"
@@ -348,7 +405,7 @@ def test_file_operations_repo(
     client.post("/api/v1/user/create", headers=auth_header)
 
     # create jobs
-    response = client.post("/api/v1/job/create", headers=auth_header)
+    response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
     job_id = response.json["jobid"]
 
     assert response.status_code == 200

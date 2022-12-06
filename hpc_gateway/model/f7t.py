@@ -11,7 +11,6 @@ def create_f7t_client():
     client_secret = current_app.config["F7T_CLIENT_SECRET"]
     token_url = current_app.config["F7T_TOKEN_URL"]
     auth_url = current_app.config["F7T_AUTH_URL"]
-    print(client_id, client_secret, token_url, auth_url)
 
     # Create an authorization object with Client Credentials authorization grant
     keycloak = f7t.ClientCredentialsAuth(

@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from flask import Blueprint, current_app, jsonify
+from flask import Blueprint, current_app, jsonify, request
 
 from hpc_gateway.auth import token_required
 from hpc_gateway.model.database import (
@@ -13,12 +13,13 @@ from hpc_gateway.model.database import (
     update_job,
 )
 from hpc_gateway.model.f7t import create_f7t_client
+from hpc_gateway.model.job import create_job_script
 
 # For the job manipulate, basically the
 # capabilies relate to simulation.
 job_api_v1 = Blueprint("job_api_v1", "job_api_v1", url_prefix="/api/v1/job")
 
-JOB_SCRIPT_FILENAME = "_job.sh"
+JOB_SCRIPT_FILENAME = "job.sh"
 
 
 @job_api_v1.route("/", methods=["GET"])
@@ -78,17 +79,21 @@ def api_create_job(current_user):
     fd = str(uuid.uuid4())  # the remote folder name of this job
     remote_folder = os.path.join(user_home, fd)
 
+    request_obj = request.get_json()
+    request_obj["email"] = email
+
     try:
         f7t_client = create_f7t_client()
         f7t_client.mkdir(machine=machine, target_path=remote_folder)
         # create a script file and upload, the content is read from parameters
-        # job_script = create_job_script(
-        #     image=image,
-        #     email=email,
-        #     mpi_cmd=mpi_cmd,
-        #     executable_cmd=executable_cmd
-        # )
-        # f7t_client.upload_file(job_script)
+        job_script = create_job_script(**request_obj)
+
+        f7t_client.simple_upload(
+            machine=machine,
+            source_path=job_script.encode(),
+            target_path=remote_folder,
+            filename=JOB_SCRIPT_FILENAME,
+        )
     except Exception as e:
         # faild to create job to remote folder
         return (
