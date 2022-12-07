@@ -72,7 +72,7 @@ def test_create_user(app, requests_mock, monkeypatch, mock_db, auth_header, user
     monkeypatch.setattr("hpc_gateway.model.database.db", mock_db)
 
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
-    response = client.post("/api/v1/user/create", headers=auth_header)
+    response = client.put("/api/v1/user/create/dummy", headers=auth_header)
 
     rjson = response.json
     assert rjson["home"] == "/scratch/f7t/jusong_yu"
@@ -105,7 +105,7 @@ def test_create_job(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.post("/api/v1/user/create", headers=auth_header)
+    client.put("/api/v1/user/create/dummy", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -214,7 +214,7 @@ def test_cancel_job(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.post("/api/v1/user/create", headers=auth_header)
+    client.put("/api/v1/user/create/dummy", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -313,7 +313,7 @@ def test_list_job_repo(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.post("/api/v1/user/create", headers=auth_header)
+    client.put("/api/v1/user/create/dummy", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -361,6 +361,8 @@ def test_file_operations_repo(
             _ = {"targetPath": target_path}
             _ = {"file": f}
 
+        assert filename in ["dummy.in", "moredummy.in", "job.sh"]
+
         assert isinstance(f, bytes)
 
     def mock_simple_download(cls, machine, source_path, target_path):
@@ -402,7 +404,7 @@ def test_file_operations_repo(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.post("/api/v1/user/create", headers=auth_header)
+    client.put("/api/v1/user/create/dummy", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -416,6 +418,20 @@ def test_file_operations_repo(
         data = {"file": (fh, f"{_dummy_filename}")}
         response = client.put(
             f"/api/v1/file/upload/{job_id}",
+            buffered=True,
+            data=data,
+            content_type="multipart/form-data",
+            headers=auth_header,
+        )
+
+    assert response.status_code == 200
+
+    # upload the dummy file with filename
+    dummy_file = f"tests/static/{_dummy_filename}"
+    with open(dummy_file, "rb") as fh:
+        data = {"file": (fh, f"{_dummy_filename}")}
+        response = client.put(
+            f"/api/v1/file/upload/{job_id}?filename=moredummy.in",
             buffered=True,
             data=data,
             content_type="multipart/form-data",

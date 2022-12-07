@@ -100,13 +100,19 @@ def api_push_file_to_repo(current_user, jobid):
 
     uploaded_file = request.files["file"]
 
+    filename = request.args.get("filename", None)
+    if filename:
+        upload_filename = filename
+    else:
+        upload_filename = uploaded_file.filename
+
     try:
         f7t_client = create_f7t_client()
         f7t_client.simple_upload(
             machine=machine,
             source_path=uploaded_file.read(),
             target_path=remote_folder,
-            filename=uploaded_file.filename,
+            filename=upload_filename,
         )
     except Exception as e:
         return (

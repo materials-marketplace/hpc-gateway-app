@@ -169,16 +169,19 @@ paths:
         put:
             security:
                 - bearerAuth: []
-            tags:
-                - DataSink
-            description: Edit a dataset
-            operationId: updateDataset
+            description: Upload file to job
+            operationId: createDataset
             parameters:
                 - in: path
-                  name: resourceid
+                  name: jobid
                   schema:
                       type: string
                   required: true
+                - in: query
+                  name: filename
+                  schema:
+                      type: string
+                  required: false
             responses:
                 '200':
                     description: Success
@@ -187,25 +190,40 @@ paths:
                 '400':
                     description: Bad Request
 
-    /delete/{resourceid}:
+    /api/v1/file/delete/{jobid}/{filename}:
         delete:
             security:
                 - bearerAuth: []
-            tags:
-                - DataSink
-            description: Delete a dataset
+            description: Delete a file of the job.
             operationId: deleteDataset
             parameters:
                 - in: path
-                  name: resourceid
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+                - in: path
+                  name: filename
                   schema:
                       type: string
                   required: true
             responses:
-                '204':
-                    description: The file is deleted.
+                '200':
+                    description: Success
                 '404':
                     description: Not found
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Job not found
+                '400':
+                    description: Bad Request
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Job is in progress
 
 components:
     securitySchemes:

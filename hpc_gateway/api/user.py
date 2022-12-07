@@ -22,9 +22,9 @@ def email_to_repo(email):
     return repo
 
 
-@user_api_v1.route("/create", methods=["POST"])
+@user_api_v1.route("/create/<username>", methods=["PUT"])
 @token_required
-def api_create_user(current_user):
+def api_create_user(current_user, username):
     """create user in DB and create a folder in remote cluster if
     it is not exist yet.
     """
