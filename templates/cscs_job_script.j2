@@ -2,7 +2,7 @@
 #SBATCH --job-name="{{ job_name }}"
 #SBATCH --account="mrcloud"
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=jusong.yu@epfl.ch,{{ email }}
+#SBATCH --mail-user={{ email }}
 #SBATCH --time=00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-core=1
@@ -16,6 +16,5 @@ module load daint-mc
 module load singularity/3.6.4-daint
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
-
 
 srun -n {{ ntasks_per_node }} singularity run --bind $PWD:$PWD {{ image }} {{ executable_cmd }}

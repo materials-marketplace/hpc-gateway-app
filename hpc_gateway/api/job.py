@@ -119,17 +119,8 @@ def api_launch_job(current_user, jobid):
     """launch the job."""
     machine = current_app.config["MACHINE"]
 
-    email = current_user.get("email")
-
-    try:
-        user = get_user(email)
-    except EntityNotFoundError:
-        return (jsonify(error="We can not find your are registered."), 500)
-    else:
-        user_home = user.get("home")
-
-    fd = str(uuid.uuid4())  # the remote folder name of this job
-    remote_folder = os.path.join(user_home, fd)
+    job = get_job(jobid)
+    remote_folder = job.get("remote_folder")
 
     try:
         f7t_client = create_f7t_client()
@@ -140,6 +131,7 @@ def api_launch_job(current_user, jobid):
         )
         f7t_job_id = response.get("jobid")
     except Exception as e:
+        print(e)
         # faild to create job to remote folder
         return (
             jsonify(
