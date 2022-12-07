@@ -89,7 +89,7 @@ def api_list_repo(current_user, jobid):
         )
 
 
-@file_api_v1.route("/upload/<jobid>", methods=["POST"])
+@file_api_v1.route("/upload/<jobid>", methods=["PUT"])
 @token_required
 def api_push_file_to_repo(current_user, jobid):
     """push (upload) file to job repository."""

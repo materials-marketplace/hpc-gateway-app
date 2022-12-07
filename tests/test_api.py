@@ -414,7 +414,7 @@ def test_file_operations_repo(
     dummy_file = f"tests/static/{_dummy_filename}"
     with open(dummy_file, "rb") as fh:
         data = {"file": (fh, f"{_dummy_filename}")}
-        response = client.post(
+        response = client.put(
             f"/api/v1/file/upload/{job_id}",
             buffered=True,
             data=data,
