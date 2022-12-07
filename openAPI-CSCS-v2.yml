@@ -14,7 +14,7 @@ servers:
     - url: https://hpc-gateway.matcloud.xyz
 
 paths:
-# Administrative path
+    # Administrative path
     /heartbeat:
         get:
             security:
@@ -25,7 +25,25 @@ paths:
                 '200':
                     description: Success
 
-# Transformation app paths
+    # need to create user at first
+    /api/v1/user/create:
+        put:
+            security:
+                - bearerAuth: []
+            description: Create user in DB and user repo in remote cluster
+            operationId: createOrUpdateCollection
+            parameters:
+                - in: path
+                  name: username
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+
+    # Transformation app paths
     /api/v1/job/create:
         post:
             security:
