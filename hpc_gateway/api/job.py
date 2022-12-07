@@ -101,7 +101,7 @@ def api_create_job(current_user):
                 error=f"unable to create job in machine {machine}.",
                 except_type=str(type(e)),
             ),
-            500,
+            400,
         )
     else:
         job = create_job(user_id=user_id, remote_folder=remote_folder)
@@ -113,7 +113,7 @@ def api_create_job(current_user):
         )
 
 
-@job_api_v1.route("/launch/<jobid>", methods=["POST"])
+@job_api_v1.route("/launch/<jobid>", methods=["PUT"])
 @token_required
 def api_launch_job(current_user, jobid):
     """launch the job."""

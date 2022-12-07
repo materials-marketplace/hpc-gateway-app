@@ -10,7 +10,6 @@ info:
     x-products:
         - name: HPC gateway app (Materials Cloud)
           product-id:
-          description: HPC gateway app (Materials Cloud)
 servers:
     - url: https://hpc-gateway.matcloud.xyz
 
@@ -27,11 +26,11 @@ paths:
                     description: Success
 
 # Transformation app paths
-    /job/initialize:
+    /api/v1/job/create:
         post:
             security:
                 - bearerAuth: []
-            description: Initialize a Transformation
+            description: Initialize a Transformation (Job)
             operationId: newTransformation
             requestBody:
                 required: true
@@ -43,27 +42,27 @@ paths:
                 '200':
                     description: Success
                     content:
-                        resourceId:
+                        jobId:
                             schema:
                                 type: string
-                                example: 3e22541c-a95e-4443-8cdc-0866171d343b
+                                example: 63907f1d36a9e8bd8e6b9c0c
                 '400':
-                    description: Bad Request
+                    description: Bad Request (unable to create job in remote cluster)
                     content:
-                        resourceId:
+                        jobId:
                             schema:
                                 type: string
                                 example: Wrong configuration input
 
-    /job/{transformation_id}/state:
-        get:
+    /api/v1/job/launch/{jobid}:
+        patch:
             security:
                 - bearerAuth: []
-            description: Get the state of a Transformation
-            operationId: getTransformationState
+            description: Launch a Transformation
+            operationId: updateTransformation
             parameters:
                 - in: path
-                  name: transformation_id
+                  name: jobid
                   schema:
                       type: string
                   required: true
@@ -78,89 +77,68 @@ paths:
                 '404':
                     description: Not found
                     content:
-                        resourceId:
+                        jobId:
                             schema:
                                 type: string
                                 example: Simulation Not found
                 '400':
                     description: Bad Request
                     content:
-                        resourceId:
+                        jobId:
                             schema:
                                 type: string
                                 example: Unexpected error
 
-    /job/{resourceid}:
-        post:
+    /api/v1/job/cancel/{jobid}:
+        delete:
             security:
                 - bearerAuth: []
-            tags:
-                - Transformation
-            description: Start execution of a Transformation
-            operationId: startTransformation
-            parameters:
-                - in: path
-                  name: resourceid
-                  schema:
-                      type: string
-                  required: true
-            responses:
-                '200':
-                    description: Success
-                '404':
-                    description: Not found
-
-    /jobs/cancel/{resourceid}:
-        post:
-            security:
-                - bearerAuth: []
-            tags:
-                - Transformation
-            description: cancel execution of a Transformation
-            operationId: stopTransformation
-            parameters:
-                - in: path
-                  name: resourceid
-                  schema:
-                      type: string
-                  required: true
-            responses:
-                '200':
-                    description: Success
-                '404':
-                    description: Not found
-
-    /jobs/delete/{resourceid}:
-        post:
-            security:
-                - bearerAuth: []
-            tags:
-                - Transformation
-            description: delete a Transformation
+            description: Cancel the Transformation
             operationId: deleteTransformation
             parameters:
                 - in: path
-                  name: resourceid
+                  name: jobid
                   schema:
                       type: string
                   required: true
             responses:
                 '200':
                     description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
                 '404':
                     description: Not found
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Unexpected error
 
-    /download/{resourceid}:
+    # dataSource endpoints
+    /api/v1/file/download/{jobid}/{filename}:
         get:
             security:
                 - bearerAuth: []
-            tags:
-                - DataSource
-            description: Fetches a particular Dataset
+            description: Get a file of the job.
             operationId: getDataset
             parameters:
                 - in: path
-                  name: resourceid
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+                - in: path
+                  name: filename
                   schema:
                       type: string
                   required: true
@@ -173,10 +151,21 @@ paths:
                                 type: object
                 '404':
                     description: Not found
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Job not found
                 '400':
                     description: Bad Request
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Job is in progress
 
-    /upload/{resourceid}:
+
+    /api/v1/file/upload/{jobid}:
         put:
             security:
                 - bearerAuth: []
@@ -231,10 +220,20 @@ components:
                 - Configuration
             type: object
             properties:
-                image_name:
+                job_name:
                     title: image_name
                     type: string
-                executable:
-                    title: excutable
+                ntasks_per_node:
+                    title: ntasks_per_node
+                    type: integer
+                partition:
+                    title: partition
+                    enum: [debug, normal]
+                    type: string
+                image:
+                    title: image
+                    type: string
+                executable_cmd:
+                    title: executable_cmd
                     type: string
             description: Transformation data model

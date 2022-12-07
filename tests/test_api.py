@@ -166,7 +166,7 @@ def test_launch_job(
     assert response.status_code == 200
 
     # launch the job
-    response = client.post(f"/api/v1/job/launch/{job_id}", headers=auth_header)
+    response = client.put(f"/api/v1/job/launch/{job_id}", headers=auth_header)
 
     assert response.status_code == 200
 
@@ -228,7 +228,7 @@ def test_cancel_job(
     assert response.status_code == 505
 
     # launch the job
-    response = client.post(f"/api/v1/job/launch/{job_id}", headers=auth_header)
+    response = client.put(f"/api/v1/job/launch/{job_id}", headers=auth_header)
 
     assert response.status_code == 200
 
