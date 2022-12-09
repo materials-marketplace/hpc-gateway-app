@@ -23,14 +23,23 @@ def api_get_repositories(current_user):
     # useless for the moment, duplicate with get_jobs.
 
 
-@file_api_v1.route("/download/<jobid>/<filename>", methods=["GET"])
+@file_api_v1.route("/download/<jobid>", methods=["GET"])
 @token_required
-def api_fetch_file_from_repo(current_user, jobid, filename):
+def api_fetch_file_from_repo(current_user, jobid):
     """fetch (download) file from a repository."""
     machine = current_app.config["MACHINE"]
 
     job = get_job(job_id=jobid)
     remote_folder = job.get("remote_folder")
+
+    filename = request.args.get("filename", None)
+    if not filename:
+        return (
+            jsonify(
+                error="Please provide the filename to download.",
+            ),
+            500,
+        )
 
     remote_file_path = os.path.join(remote_folder, filename)
     binary_stream = io.BytesIO()
@@ -132,14 +141,23 @@ def api_push_file_to_repo(current_user, jobid):
         )
 
 
-@file_api_v1.route("/delete/<jobid>/<filename>", methods=["DELETE"])
+@file_api_v1.route("/delete/<jobid>", methods=["DELETE"])
 @token_required
-def api_delete_file_from_repo(current_user, jobid, filename):
+def api_delete_file_from_repo(current_user, jobid):
     """delete the file from the job repository."""
     machine = current_app.config["MACHINE"]
 
     job = get_job(job_id=jobid)
     remote_folder = job.get("remote_folder")
+
+    filename = request.args.get("filename", None)
+    if not filename:
+        return (
+            jsonify(
+                error="Please provide the filename to delete.",
+            ),
+            500,
+        )
 
     file_path = os.path.join(remote_folder, filename)
 

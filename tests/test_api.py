@@ -442,7 +442,9 @@ def test_file_operations_repo(
 
     # download the dummy file
     response = client.get(
-        f"/api/v1/file/download/{job_id}/{_dummy_filename}", headers=auth_header
+        f"/api/v1/file/download/{job_id}",
+        headers=auth_header,
+        query_string={"filename": "job.sh"},
     )
 
     assert response.status_code == 200
