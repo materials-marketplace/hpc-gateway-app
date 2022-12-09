@@ -2,16 +2,16 @@
 openapi: 3.0.0
 
 info:
-    title: HPC gateway app (Materials Cloud)
-    description: Access to CSCS HPC through firecrest
-    version: 0.1.1
-    x-application-name: HPC gateway app (Materials Cloud)
+    title: HPC gateway app (IWM)
+    description: Access to IWM HPC through firecrest
+    version: 0.1.0
+    x-application-name: HPC gateway app (IWM)
     x-api-version: 0.3.0
     x-products:
-        - name: HPC gateway app (Materials Cloud)
+        - name: HPC gateway app (IWM)
           product-id:
 servers:
-    - url: https://hpc-gateway.matcloud.xyz
+    - url: https://staging.materials-marketplace.eu/message-broker
 
 paths:
     # Administrative path
@@ -32,6 +32,11 @@ paths:
                 - bearerAuth: []
             description: Create user in DB and user repo in remote cluster
             operationId: createOrUpdateCollection
+            parameters:
+                - in: path
+                  name: username
+                  schema:
+                      type: string
             responses:
                 '200':
                     description: Success
@@ -74,7 +79,7 @@ paths:
             description: Launch a Transformation
             operationId: updateTransformation
             parameters:
-                - in: query
+                - in: path
                   name: jobid
                   schema:
                       type: string

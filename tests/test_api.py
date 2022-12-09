@@ -72,7 +72,7 @@ def test_create_user(app, requests_mock, monkeypatch, mock_db, auth_header, user
     monkeypatch.setattr("hpc_gateway.model.database.db", mock_db)
 
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
-    response = client.put("/api/v1/user/create/dummy", headers=auth_header)
+    response = client.put("/api/v1/user/create", headers=auth_header)
 
     rjson = response.json
     assert rjson["home"] == "/scratch/f7t/jusong_yu"
@@ -105,7 +105,7 @@ def test_create_job(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.put("/api/v1/user/create/dummy", headers=auth_header)
+    client.put("/api/v1/user/create", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -157,7 +157,7 @@ def test_launch_job(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.post("/api/v1/job/create", headers=auth_header, json=job_json)
+    client.put("/api/v1/user/create", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -166,7 +166,7 @@ def test_launch_job(
     assert response.status_code == 200
 
     # launch the job
-    response = client.put(f"/api/v1/job/launch/{job_id}", headers=auth_header)
+    response = client.patch(f"/api/v1/job/launch/{job_id}", headers=auth_header)
 
     assert response.status_code == 200
 
@@ -214,7 +214,7 @@ def test_cancel_job(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.put("/api/v1/user/create/dummy", headers=auth_header)
+    client.put("/api/v1/user/create", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -228,7 +228,7 @@ def test_cancel_job(
     assert response.status_code == 505
 
     # launch the job
-    response = client.put(f"/api/v1/job/launch/{job_id}", headers=auth_header)
+    response = client.patch(f"/api/v1/job/launch/{job_id}", headers=auth_header)
 
     assert response.status_code == 200
 
@@ -313,7 +313,7 @@ def test_list_job_repo(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.put("/api/v1/user/create/dummy", headers=auth_header)
+    client.put("/api/v1/user/create", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)
@@ -404,7 +404,7 @@ def test_file_operations_repo(
     requests_mock.get(userinfo_url, json=userinfo, status_code=200)
 
     # create user
-    client.put("/api/v1/user/create/dummy", headers=auth_header)
+    client.put("/api/v1/user/create", headers=auth_header)
 
     # create jobs
     response = client.post("/api/v1/job/create", headers=auth_header, json=job_json)

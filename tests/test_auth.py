@@ -1,6 +1,6 @@
 # Tests of @token_required decorator
 def test_auth_no_auth_fail(client):
-    response = client.post("/api/v1/user/create")
+    response = client.put("/api/v1/user/create")
     assert response.json["message"] == "Authentication Token is missing!"
 
 
@@ -11,7 +11,7 @@ def test_auth_invalid_token(client):
         "User-Agent": "HPC-app",
         "Authorization": f"Bearer {token}",
     }
-    response = client.post("/api/v1/user/create", headers=headers)
+    response = client.put("/api/v1/user/create", headers=headers)
     assert response.json["message"] == "Invalid Authentication token!"
 
 
@@ -27,5 +27,5 @@ def test_auth_invalid_userinfo_url(app):
         "User-Agent": "HPC-app",
         "Authorization": f"Bearer {token}",
     }
-    response = client.post("/api/v1/user/create", headers=headers)
+    response = client.put("/api/v1/user/create", headers=headers)
     assert "Connection error" in response.json["message"]

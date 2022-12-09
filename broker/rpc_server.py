@@ -1,3 +1,4 @@
+import ast
 import json
 import logging
 import os
@@ -13,6 +14,10 @@ from marketplace_standard_app_api.models.message_broker import (
 )
 
 HPCGATEWAY_URL = os.environ.get("HPCGATEWAY_URL")
+GATEWAY_CLIEND_ID = os.environ.get("GATEWAY_CLIENT_ID")
+GATEWAY_CLIEND_SECRET = os.environ.get("GATEWAY_CLIENT_SECRET")
+MP_HOST_URL = os.environ.get("MP_HOST_URL")
+LOG_PATH = os.environ.get("BROKER_LOG_PATH", "./deploy/logs/broker")
 
 
 # formatter is executed for every log
@@ -48,6 +53,13 @@ def relay(request: MessageBrokerRequestModel):
     }
 
     endpoint = request.endpoint
+    method = request.method
+    body = request.body
+
+    print(body, type(body))
+    if body:
+        data = ast.literal_eval(body)
+        print(data, type(data))
 
     logging.info(f"RPC relaying endpoint {endpoint} ....")
     # endpoint = '/broker'    # test
@@ -55,38 +67,48 @@ def relay(request: MessageBrokerRequestModel):
 
     # Use GET request method
     # TODO how I know it is GET??
-    params = request.query_params
-    if endpoint == "" or endpoint == "jobs/" or "download/" in endpoint:
-        resp = requests.get(
-            abs_url,
-            params=params,
-            headers=headers,
-            verify=None,
-        )
-    elif "jobs/new" in endpoint or "jobs/run" in endpoint:
-        resp = requests.post(
-            abs_url,
-            params=params,
-            headers=headers,
-            verify=None,
-        )
-    elif "upload/" in endpoint:
-        resp = requests.put(
-            abs_url,
-            params=params,
-            headers=headers,
-            verify=None,
-        )
-    else:
-        # DELETE
-        resp = requests.delete(
-            abs_url,
-            params=params,
-            headers=headers,
-            verify=None,
-        )
+    try:
+        params = request.query_params
+        if method == "GET":
+            resp = requests.get(
+                abs_url,
+                params=params,
+                headers=headers,
+                verify=None,
+            )
 
-    return resp.json(), resp.status_code
+        if method == "POST":
+            resp = requests.post(
+                abs_url,
+                params=params,
+                json=data,
+                headers=headers,
+                verify=None,
+            )
+
+        if method == "PUT":
+            resp = requests.put(
+                abs_url,
+                params=params,
+                headers=headers,
+                verify=None,
+            )
+
+        if method == "DELETE":
+            # DELETE
+            resp = requests.delete(
+                abs_url,
+                params=params,
+                headers=headers,
+                verify=None,
+            )
+
+        return resp.json(), resp.status_code
+
+    except Exception as e:
+        return {
+            "error": f"Error: You request to {endpoint} failed with {str(e)}",
+        }, 400
 
 
 def hpc_message_relayer(
@@ -94,7 +116,6 @@ def hpc_message_relayer(
 ) -> MessageBrokerResponseModel:
 
     response, status_code = relay(request_message)
-    # print(request_message)
 
     response_message = MessageBrokerResponseModel(
         status_code=status_code,
@@ -105,7 +126,6 @@ def hpc_message_relayer(
 
 
 if __name__ == "__main__":
-    LOG_PATH = os.environ.get("BROKER_LOG_PATH", "./deploy/logs/broker")
     # timed rotation: 1 (interval) rotation per day (when="D")
     logHandler = TimedRotatingFileHandler(
         f"{LOG_PATH}/rpc-server.log", when="D", interval=1
@@ -129,9 +149,9 @@ if __name__ == "__main__":
     # disable Flask internal logging to avoid full url exposure
     logging.getLogger("pika").propagate = False
 
-    gateway_client_id = os.environ.get("GATEWAY_CLIENT_ID")
-    gateway_client_secret = os.environ.get("GATEWAY_CLIENT_SECRET")
-    host = os.environ.get("MP_HOST_URL")
+    gateway_client_id = GATEWAY_CLIEND_ID
+    gateway_client_secret = GATEWAY_CLIEND_SECRET
+    host = MP_HOST_URL
 
     rpc_server = RpcServer(
         host=host,

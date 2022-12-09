@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from bson import ObjectId, json_util
-from flask import Flask, Response, render_template
+from flask import Flask, jsonify, render_template
 from flask.json import JSONEncoder
 
 from hpc_gateway.api.file import file_api_v1
@@ -42,10 +42,11 @@ def create_app():
 
     @app.route("/heartbeat")
     def heartbeat():
-        return Response(
-            "HPC-gateway-App : application running.",
-            status=200,
-            mimetype="text/plain",
+        return (
+            jsonify(
+                message="HPC-gateway-App : application running.",
+            ),
+            200,
         )
 
     return app

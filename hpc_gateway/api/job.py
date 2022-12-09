@@ -113,7 +113,7 @@ def api_create_job(current_user):
         )
 
 
-@job_api_v1.route("/launch/<jobid>", methods=["PUT"])
+@job_api_v1.route("/launch/<jobid>", methods=["PATCH"])
 @token_required
 def api_launch_job(current_user, jobid):
     """launch the job."""
