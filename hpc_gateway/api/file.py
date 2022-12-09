@@ -50,6 +50,7 @@ def api_fetch_file_from_repo(current_user, jobid, filename):
             jsonify(
                 error="unable to download file.",
                 except_type=str(type(e)),
+                debug=f"filename: {filename}",
             ),
             500,
         )
