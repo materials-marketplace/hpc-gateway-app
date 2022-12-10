@@ -42,7 +42,7 @@ class StagingMCConfig(StagingConfig):
 
     MONGODB_PASSWORD = os.environ.get("MONGODB_PASSWORD")
     MONGO_URI = f"mongodb+srv://mphpc:{MONGODB_PASSWORD}@mongodb-heroku-mp-hpc-a.dzddt.mongodb.net/hpcdb?retryWrites=true&w=majority"
-    
+
     MACHINE = "daint"
     CLUSTER_HOME = "/scratch/snx3000/jyu/firecrest/"
     F7T_CLIENT_ID = os.environ.get("F7T_CLIENT_ID")
@@ -52,22 +52,25 @@ class StagingMCConfig(StagingConfig):
         "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
     )
 
+
 class StagingIWMConfig(StagingConfig):
     """IWM self-hosted firecrest deployment,
     registered in staging server communicate via broker."""
 
-    MONGO_URI = f"mongodb://mongo:27017"
-    
+    MONGO_URI = "mongodb://mongo:27017"
+
     MACHINE = "cluster"
     CLUSTER_HOME = "/home/jyu/firecrest"
     F7T_AUTH_URL = "http://192.168.220.21:8000"
     F7T_TOKEN = os.environ.get("F7T_TOKEN")
-    
+
+
 class TestingConfig(Config):
     TESTING = True
     MONGO_URI = "mongodb://"
     MP_URL = "http://staging.materials-marketplace.eu"
     MP_USERINFO_URL = urljoin(MP_URL, USERINFO_ENDPOINT)
+
 
 class TestingMCConfig(TestingConfig):
     MACHINE = "daint"
@@ -79,9 +82,9 @@ class TestingMCConfig(TestingConfig):
         "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
     )
 
+
 class TestingIWMConfig(TestingConfig):
     MACHINE = "cluster"
     CLUSTER_HOME = "/home/jyu/firecrest"
     F7T_AUTH_URL = "http://192.168.220.21:8000"
     F7T_TOKEN = os.environ.get("F7T_TOKEN")
-    

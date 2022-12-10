@@ -18,8 +18,8 @@ services:
         ports:
             - 5000:5000
         networks:
-            # - f7t
-            - hpcgw
+            - f7t
+            - backend
 
     # marketplace broker
     broker:
@@ -34,17 +34,22 @@ services:
         volumes:
             - ./logs/broker:/var/log:delegated
         networks:
-            - hpcgw
+            - backend
 
     mongo:
         restart: always
         image: mongo:4
         volumes:
-            - /home/jyu/gwdb:/data/db
+            - mongodbdata:/data/db
         networks:
-            - hpcgw
+            - backend
 
 networks:
     f7t:
+    # Used to comunicate with f7t deployment
         external: true
-    hpcgw:
+    backend:
+
+volumes:
+    mongodbdata:
+        driver: local
