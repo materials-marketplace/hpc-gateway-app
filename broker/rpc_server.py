@@ -29,44 +29,43 @@ class LogRequestFormatter(logging.Formatter):
         return super().format(record)
 
 
-def relay(request: MessageBrokerRequestModel):
+def hpc_message_relayer(
+    request_message: MessageBrokerRequestModel,
+) -> MessageBrokerResponseModel:
     """get request from broker, process the request so hpc app can understand it.
-    then relay it to hpc app then return (resp, status_code)
+    then relay it to hpc app then return.
     """
-    endpoint = request.endpoint
+    endpoint = request_message.endpoint
 
     logging.info(f"RPC relaying endpoint {endpoint} ....")
     abs_url = urljoin(HPCGATEWAY_URL, endpoint)
 
     try:
         resp = requests.request(
-            request.method,
+            request_message.method,
             url=abs_url,
-            params=request.query_params,
-            headers=request.headers,
-            data=request.body,
+            params=request_message.query_params,
+            headers=request_message.headers,
+            data=request_message.body,
         )
-
-        return resp
+        
+        response_message = MessageBrokerResponseModel(
+            status_code=resp.status_code,
+            body=resp.content,
+            headers=resp.headers,
+        )
     except Exception as e:
+        print(e)
         return {
             "error": f"Error: You request to {endpoint} failed with {str(e)}",
         }, 400
-
-
-def hpc_message_relayer(
-    request_message: MessageBrokerRequestModel,
-) -> MessageBrokerResponseModel:
-
-    resp = relay(request_message)
-
-    response_message = MessageBrokerResponseModel(
-        status_code=resp.status_code,
-        body=resp.content,
-        headers=resp.headers,
-    )
+        response_message = MessageBrokerResponseModel(
+            status_code=400,
+            body='{\n  "message": "HPC-gateway-App : app fail."\n}\n',
+            headers="{'Content-Type': 'application/json', 'Connection': 'close'}",
+        )    
+    
     return response_message
-
 
 if __name__ == "__main__":
     # timed rotation: 1 (interval) rotation per day (when="D")

@@ -452,8 +452,9 @@ def test_file_operations_repo(
 
     # delete file
     response = client.delete(
-        f"/api/v1/file/delete/{job_id}/{_dummy_filename}",
+        f"/api/v1/file/delete/{job_id}",
         headers=auth_header,
+        query_string={"filename": f"{_dummy_filename}"},
     )
 
     assert response.status_code == 200

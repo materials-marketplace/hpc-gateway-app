@@ -53,6 +53,25 @@ class StagingMCConfig(StagingConfig):
         "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
     )
 
+class StagingIWMConfig(StagingConfig):
+    """IWM self-hosted firecrest deployment,
+    registered in staging server communicate via broker."""
+
+    FLASK_ENV = "production"
+    CLUSTER_HOME = "/scratch/snx3000/jyu/firecrest/"
+    TESTING = False
+    MONGODB_PASSWORD = os.environ.get("MONGODB_PASSWORD")
+    MONGO_URI = f"mongodb+srv://mphpc:{MONGODB_PASSWORD}@mongodb-heroku-mp-hpc-a.dzddt.mongodb.net/hpcdb?retryWrites=true&w=majority"
+    MP_URL = "http://staging.materials-marketplace.eu"
+    MP_USERINFO_URL = urljoin(MP_URL, USERINFO_ENDPOINT)
+    MACHINE = "daint"
+
+    F7T_CLIENT_ID = os.environ.get("F7T_CLIENT_ID")
+    F7T_CLIENT_SECRET = os.environ.get("F7T_SECRET")
+    F7T_AUTH_URL = "https://firecrest.cscs.ch"
+    F7T_TOKEN_URL = (
+        "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
+    )
 
 class TestingConfig(Config):
     TESTING = True

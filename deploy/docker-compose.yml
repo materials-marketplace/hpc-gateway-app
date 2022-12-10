@@ -3,34 +3,34 @@ version: '3'
 
 services:
 
-    hpc-gateway:
+    # the base image of hpc-gateway-app
+    base:
         restart: always
         depends_on:
             - mongo
         build:
             context: ..
             dockerfile: deploy/base/Dockerfile
-            args:
-                CONFIG_FILE: config.json
         env_file:
-            - ./common.env
+            - ./.env
         volumes:
             - ./logs/hpc-gateway:/var/log:delegated
         ports:
-            - 5253:5253
+            - 5000:5000
         networks:
-            - f7t
+            # - f7t
             - hpcgw
 
-    rpc-server:
+    # marketplace broker
+    broker:
         restart: always
         depends_on:
-            - hpc-gateway
+            - base
         build:
             context: ..
             dockerfile: deploy/broker/Dockerfile
         env_file:
-            - ./common.env
+            - ./.env
         volumes:
             - ./logs/broker:/var/log:delegated
         networks:

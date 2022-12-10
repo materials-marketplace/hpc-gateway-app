@@ -2,9 +2,9 @@ from hpc_gateway.factory import create_app
 
 if __name__ == "__main__":
     app = create_app()
-    app.config.from_object("hpc_gateway.config.StagingMCConfig")
+    app.config.from_object("hpc_gateway.config.StagingIWMConfig")
 
-    app.run()
+    app.run(host='0.0.0.0')
 else:
     # for dokku deploy in MC
     gunicorn_app = create_app()
