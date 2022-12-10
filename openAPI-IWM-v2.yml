@@ -4,7 +4,7 @@ openapi: 3.0.0
 info:
     title: HPC gateway app (IWM)
     description: Access to IWM HPC through firecrest
-    version: 0.1.0
+    version: 0.2.0
     x-application-name: HPC gateway app (IWM)
     x-api-version: 0.3.0
     x-products:
@@ -32,11 +32,6 @@ paths:
                 - bearerAuth: []
             description: Create user in DB and user repo in remote cluster
             operationId: createOrUpdateCollection
-            parameters:
-                - in: path
-                  name: username
-                  schema:
-                      type: string
             responses:
                 '200':
                     description: Success
@@ -79,7 +74,7 @@ paths:
             description: Launch a Transformation
             operationId: updateTransformation
             parameters:
-                - in: path
+                - in: query
                   name: jobid
                   schema:
                       type: string
@@ -143,7 +138,7 @@ paths:
                                 example: Unexpected error
 
     # dataSource endpoints
-    /api/v1/file/download/{jobid}/{filename}:
+    /api/v1/file/download/{jobid}:
         get:
             security:
                 - bearerAuth: []
@@ -155,7 +150,7 @@ paths:
                   schema:
                       type: string
                   required: true
-                - in: path
+                - in: query
                   name: filename
                   schema:
                       type: string
@@ -195,11 +190,12 @@ paths:
                   schema:
                       type: string
                   required: true
-                - in: query
-                  name: filename
-                  schema:
-                      type: string
-                  required: false
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            $ref: '#/components/schemas/BodyFileCreateDataset'
             responses:
                 '200':
                     description: Success
@@ -208,7 +204,7 @@ paths:
                 '400':
                     description: Bad Request
 
-    /api/v1/file/delete/{jobid}/{filename}:
+    /api/v1/file/delete/{jobid}:
         delete:
             security:
                 - bearerAuth: []
@@ -220,7 +216,7 @@ paths:
                   schema:
                       type: string
                   required: true
-                - in: path
+                - in: query
                   name: filename
                   schema:
                       type: string
@@ -230,18 +226,8 @@ paths:
                     description: Success
                 '404':
                     description: Not found
-                    content:
-                        resourceId:
-                            schema:
-                                type: string
-                                example: Job not found
                 '400':
                     description: Bad Request
-                    content:
-                        resourceId:
-                            schema:
-                                type: string
-                                example: Job is in progress
 
 components:
     securitySchemes:
@@ -273,3 +259,13 @@ components:
                     title: executable_cmd
                     type: string
             description: Transformation data model
+        BodyFileCreateDataset:
+            title: BodyFileCreateDataset
+            required:
+                - file
+            type: object
+            properties:
+                file:
+                    type: string
+                    format: binary
+            description: File object by CreateDataset capability

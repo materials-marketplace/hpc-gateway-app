@@ -1,5 +1,3 @@
-import ast
-import json
 import logging
 import os
 import threading
@@ -35,76 +33,21 @@ def relay(request: MessageBrokerRequestModel):
     """get request from broker, process the request so hpc app can understand it.
     then relay it to hpc app then return (resp, status_code)
     """
-    try:
-        token = request.headers["authorization"].split(" ")[1]
-        # print(token)
-    except Exception as exc:
-        return {
-            "message": "Authentication Token is missing from broker's request!",
-            "data": None,
-            "error": "Unauthorized",
-            "error_message": f"{exc}",
-        }, 401
-
-    headers = {
-        "Accept": "application/json",
-        "User-Agent": "RPC broker",
-        "Authorization": f"Bearer {token}",
-    }
-
     endpoint = request.endpoint
-    method = request.method
-    body = request.body
-
-    print(body, type(body))
-    if body:
-        data = ast.literal_eval(body)
-        print(data, type(data))
 
     logging.info(f"RPC relaying endpoint {endpoint} ....")
-    # endpoint = '/broker'    # test
     abs_url = urljoin(HPCGATEWAY_URL, endpoint)
 
-    # Use GET request method
-    # TODO how I know it is GET??
     try:
-        params = request.query_params
-        if method == "GET":
-            resp = requests.get(
-                abs_url,
-                params=params,
-                headers=headers,
-                verify=None,
-            )
+        resp = requests.request(
+            request.method,
+            url=abs_url,
+            params=request.query_params,
+            headers=request.headers,
+            data=request.body,
+        )
 
-        if method == "POST":
-            resp = requests.post(
-                abs_url,
-                params=params,
-                json=data,
-                headers=headers,
-                verify=None,
-            )
-
-        if method == "PUT":
-            resp = requests.put(
-                abs_url,
-                params=params,
-                headers=headers,
-                verify=None,
-            )
-
-        if method == "DELETE":
-            # DELETE
-            resp = requests.delete(
-                abs_url,
-                params=params,
-                headers=headers,
-                verify=None,
-            )
-
-        return resp.json(), resp.status_code
-
+        return resp
     except Exception as e:
         return {
             "error": f"Error: You request to {endpoint} failed with {str(e)}",
@@ -115,12 +58,12 @@ def hpc_message_relayer(
     request_message: MessageBrokerRequestModel,
 ) -> MessageBrokerResponseModel:
 
-    response, status_code = relay(request_message)
+    resp = relay(request_message)
 
     response_message = MessageBrokerResponseModel(
-        status_code=status_code,
-        body=json.dumps(response),
-        headers={"Content-Type": "application/json"},
+        status_code=resp.status_code,
+        body=resp.content,
+        headers=resp.headers,
     )
     return response_message
 
