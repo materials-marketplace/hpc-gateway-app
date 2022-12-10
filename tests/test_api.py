@@ -75,7 +75,7 @@ def test_create_user(app, requests_mock, monkeypatch, mock_db, auth_header, user
     response = client.put("/api/v1/user/create", headers=auth_header)
 
     rjson = response.json
-    assert rjson["home"] == "/scratch/f7t/jusong_yu"
+    assert app.config["CLUSTER_HOME"] in rjson["home"]
     assert rjson["message"] == "Success: Create user in database."
 
 

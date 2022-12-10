@@ -1,3 +1,4 @@
+import os
 import mongomock
 import pymongo
 import pytest
@@ -18,7 +19,10 @@ def mock_db():
 @pytest.fixture()
 def app():
     app = create_app()
-    app.config.from_object("hpc_gateway.config.TestingConfig")
+    if os.environ.get("DEPLOYMENT", "MC") == "IWM":
+        app.config.from_object("hpc_gateway.config.TestingIWMConfig")
+    else:
+        app.config.from_object("hpc_gateway.config.TestingMCConfig")
 
     yield app
 
