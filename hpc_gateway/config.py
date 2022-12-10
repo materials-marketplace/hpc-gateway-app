@@ -78,12 +78,18 @@ class TestingConfig(Config):
     MONGO_URI = "mongodb://"
     MP_URL = "http://staging.materials-marketplace.eu"
     MP_USERINFO_URL = urljoin(MP_URL, USERINFO_ENDPOINT)
-    CLUSTER_HOME = "/scratch/f7t"
-    MACHINE = "daint"
-
-    F7T_CLIENT_ID = os.environ.get("F7T_CLIENT_ID")
-    F7T_CLIENT_SECRET = os.environ.get("F7T_SECRET")
-    F7T_AUTH_URL = "https://firecrest.cscs.ch"
-    F7T_TOKEN_URL = (
-        "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
-    )
+    
+    if os.environ.get("DEPLOYMENT", "MC") == "IWM":
+        MACHINE = "cluster"
+        CLUSTER_HOME = "/home/jyu/firecrest"
+        F7T_AUTH_URL = "http://192.168.220.21:8000"
+        F7T_TOKEN = os.environ.get("F7T_TOKEN")
+    else:
+        CLUSTER_HOME = "/scratch/f7t"
+        MACHINE = "daint"
+        F7T_CLIENT_ID = os.environ.get("F7T_CLIENT_ID")
+        F7T_CLIENT_SECRET = os.environ.get("F7T_SECRET")
+        F7T_AUTH_URL = "https://firecrest.cscs.ch"
+        F7T_TOKEN_URL = (
+            "https://auth.cscs.ch/auth/realms/cscs/protocol/openid-connect/token"
+        )

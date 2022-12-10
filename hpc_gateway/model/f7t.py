@@ -1,5 +1,6 @@
 import pathlib
 from contextlib import nullcontext
+import os
 
 import firecrest as f7t
 import requests
@@ -7,22 +8,32 @@ from flask import current_app
 
 
 def create_f7t_client():
-    client_id = current_app.config["F7T_CLIENT_ID"]
-    client_secret = current_app.config["F7T_CLIENT_SECRET"]
-    token_url = current_app.config["F7T_TOKEN_URL"]
-    auth_url = current_app.config["F7T_AUTH_URL"]
+    if os.environ.get("DEPLOYMENT", "MC") == "IWM":
+        hardcode = HardCodeTokenAuth(
+            token=current_app.config["F7T_TOKEN"],
+        )
+        auth_url = current_app.config["F7T_AUTH_URL"]
+        client = Firecrest(firecrest_url=auth_url, authorization=hardcode)
+        
+        return client
+        
+    else:
+        client_id = current_app.config["F7T_CLIENT_ID"]
+        client_secret = current_app.config["F7T_CLIENT_SECRET"]
+        token_url = current_app.config["F7T_TOKEN_URL"]
+        auth_url = current_app.config["F7T_AUTH_URL"]
 
-    # Create an authorization object with Client Credentials authorization grant
-    keycloak = f7t.ClientCredentialsAuth(
-        client_id,
-        client_secret,
-        token_url,
-    )
+        # Create an authorization object with Client Credentials authorization grant
+        keycloak = f7t.ClientCredentialsAuth(
+            client_id,
+            client_secret,
+            token_url,
+        )
 
-    # Setup the client for the specific account
-    client = Firecrest(firecrest_url=auth_url, authorization=keycloak)
+        # Setup the client for the specific account
+        client = Firecrest(firecrest_url=auth_url, authorization=keycloak)
 
-    return client
+        return client
 
 
 # Create an authorization object with Client Credentials authorization grant
