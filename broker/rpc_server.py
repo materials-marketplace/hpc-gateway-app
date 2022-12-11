@@ -48,7 +48,7 @@ def hpc_message_relayer(
             headers=request_message.headers,
             data=request_message.body,
         )
-        
+
         response_message = MessageBrokerResponseModel(
             status_code=resp.status_code,
             body=resp.content,
@@ -63,9 +63,10 @@ def hpc_message_relayer(
             status_code=400,
             body='{\n  "message": "HPC-gateway-App : app fail."\n}\n',
             headers="{'Content-Type': 'application/json', 'Connection': 'close'}",
-        )    
-    
+        )
+
     return response_message
+
 
 if __name__ == "__main__":
     # timed rotation: 1 (interval) rotation per day (when="D")

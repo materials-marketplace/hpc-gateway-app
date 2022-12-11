@@ -1,6 +1,6 @@
+import os
 import pathlib
 from contextlib import nullcontext
-import os
 
 import firecrest as f7t
 import requests
@@ -14,9 +14,9 @@ def create_f7t_client():
         )
         auth_url = current_app.config["F7T_AUTH_URL"]
         client = Firecrest(firecrest_url=auth_url, authorization=hardcode)
-        
+
         return client
-        
+
     else:
         client_id = current_app.config["F7T_CLIENT_ID"]
         client_secret = current_app.config["F7T_CLIENT_SECRET"]

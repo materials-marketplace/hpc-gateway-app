@@ -75,7 +75,7 @@ class TestingConfig(Config):
 
 class TestingMCConfig(TestingConfig):
     MACHINE = "daint"
-    CLUSTER_HOME = "/scratch/f7t"
+    CLUSTER_HOME = "/scratch/snx3000/jyu/firecrest/"
     F7T_CLIENT_ID = os.environ.get("F7T_CLIENT_ID")
     F7T_CLIENT_SECRET = os.environ.get("F7T_SECRET")
     F7T_AUTH_URL = "https://firecrest.cscs.ch"
