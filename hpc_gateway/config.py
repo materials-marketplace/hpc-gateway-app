@@ -57,7 +57,8 @@ class StagingIWMConfig(StagingConfig):
     """IWM self-hosted firecrest deployment,
     registered in staging server communicate via broker."""
 
-    MONGO_URI = "mongodb://mongo:27017"
+    MONGODB_PASSWORD = os.environ.get("MONGODB_PASSWORD")
+    MONGO_URI = f"mongodb://flaskuser:{MONGODB_PASSWORD}@mongo:27017/flaskdb"
 
     MACHINE = "cluster"
     CLUSTER_HOME = "/home/jyu/firecrest"
