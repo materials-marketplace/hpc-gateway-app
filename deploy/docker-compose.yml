@@ -1,49 +1,63 @@
+---
 version: '3'
 
 services:
 
-  hpc-gateway:
-    restart: always
-    depends_on:
-      - mongo
-    build:
-      context: ..
-      dockerfile: deploy/base/Dockerfile
-      args:
-        CONFIG_FILE: config.json
-    env_file:
-      - ./common.env
-    volumes:
-      - './logs/hpc-gateway:/var/log:delegated'
-    ports:
-      - '5253:5253'
-    networks:
-      - f7t
-      - hpcgw
+    # the base image of hpc-gateway-app
+    base:
+        restart: always
+        depends_on:
+            - mongo
+        build:
+            context: ..
+            dockerfile: deploy/base/Dockerfile
+        env_file:
+            - ./.env
+        volumes:
+            - ./logs/hpc-gateway:/var/log:delegated
+        ports:
+            - 5000:5000
+        networks:
+            - f7t
+            - backend
 
-  rpc-server:
-    restart: always
-    depends_on: 
-      - hpc-gateway
-    build:
-      context: ..
-      dockerfile: deploy/broker/Dockerfile
-    env_file:
-      - ./common.env
-    volumes:
-      - './logs/broker:/var/log:delegated'
-    networks:
-      - hpcgw
+    # marketplace broker
+    broker:
+        restart: always
+        depends_on:
+            - base
+        build:
+            context: ..
+            dockerfile: deploy/broker/Dockerfile
+        env_file:
+            - ./.env
+        volumes:
+            - ./logs/broker:/var/log:delegated
+        networks:
+            - backend
 
-  mongo:
-    restart: always
-    image: mongo:4
-    volumes:
-      - '/home/jyu/gwdb:/data/db'
-    networks:
-      - hpcgw
+    mongo:
+        restart: always
+        image: mongo:4
+        container_name: mongo
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: mongodbuser
+            MONGO_INITDB_DATABASE: flaskdb
+            MONGODB_DATA_DIR: /data/db
+            MONDODB_LOG_DIR: /dev/null
+        env_file:
+            - ./.env
+        volumes:
+            - mongodbdata:/data/db
+        networks:
+            - backend
 
 networks:
-  f7t:
-    external: true
-  hpcgw:
+    f7t:
+    # Used to comunicate with f7t deployment
+        external: true
+    backend:
+
+volumes:
+    mongodbdata:
+        driver: local

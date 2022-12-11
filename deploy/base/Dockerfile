@@ -1,14 +1,12 @@
-FROM python:3.8
+FROM python:3.9
 
 WORKDIR /app
 
 # Copy repo contents
-COPY hpc_gateway/ ./hpc_gateway
-COPY app.py setup.cfg setup.py ./
+COPY . ./hpc-gateway-app
 
-RUN pip install -U pip setuptools wheel \
-    && pip install -e .
+RUN pip install ./hpc-gateway-app[deploy]
 
-COPY .docker/run.sh ./
+WORKDIR /app/hpc-gateway-app
 
-CMD ["/app/run.sh"]
+CMD ["python", "run.py"]

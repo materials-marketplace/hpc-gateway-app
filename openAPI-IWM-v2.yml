@@ -1,0 +1,306 @@
+---
+openapi: 3.0.0
+
+info:
+    title: HPC gateway app (IWM)
+    description: Access to IWM HPC through firecrest
+    version: 0.2.1
+    x-application-name: HPC gateway app (IWM)
+    x-api-version: 0.3.0
+    x-products:
+        - name: HPC gateway app (IWM)
+          product-id:
+servers:
+    - url: https://staging.materials-marketplace.eu/message-broker
+
+paths:
+    # Administrative path
+    /heartbeat:
+        get:
+            security:
+                - bearerAuth: []
+            description: Returns a heartbeat
+            operationId: heartbeat
+            responses:
+                '200':
+                    description: Success
+
+    # need to create user at first
+    /api/v1/user/create:
+        put:
+            security:
+                - bearerAuth: []
+            description: Create user in DB and user repo in remote cluster
+            operationId: createOrUpdateCollection
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+
+    # Transformation app paths
+    /api/v1/job/create:
+        post:
+            security:
+                - bearerAuth: []
+            description: Initialize a Transformation (Job)
+            operationId: newTransformation
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TransformationConfig'
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: 63907f1d36a9e8bd8e6b9c0c
+                '400':
+                    description: Bad Request (unable to create job in remote cluster)
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Wrong configuration input
+
+    /api/v1/job/launch/{jobid}:
+        patch:
+            security:
+                - bearerAuth: []
+            description: Launch a Transformation
+            operationId: updateTransformation
+            parameters:
+                - in: query
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
+                '404':
+                    description: Not found
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Unexpected error
+
+    /api/v1/job/state/{jobid}:
+        get:
+            security:
+                - bearerAuth: []
+            description: Get the state of o Transformation
+            operationId: getTransformationState
+            parameters:
+                - in: query
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
+                '404':
+                    description: Not found
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Unexpected error
+
+    /api/v1/job/cancel/{jobid}:
+        delete:
+            security:
+                - bearerAuth: []
+            description: Cancel the Transformation
+            operationId: deleteTransformation
+            parameters:
+                - in: path
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
+                '404':
+                    description: Not found
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Unexpected error
+
+    # dataSource endpoints
+    /api/v1/file/download/{jobid}:
+        get:
+            security:
+                - bearerAuth: []
+            description: Get a file of the job.
+            operationId: getDataset
+            parameters:
+                - in: path
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+                - in: query
+                  name: filename
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+                '404':
+                    description: Not found
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Job not found
+                '400':
+                    description: Bad Request
+                    content:
+                        resourceId:
+                            schema:
+                                type: string
+                                example: Job is in progress
+
+
+    /api/v1/file/upload/{jobid}:
+        put:
+            security:
+                - bearerAuth: []
+            description: Upload file to job
+            operationId: createDataset
+            parameters:
+                - in: path
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            $ref: '#/components/schemas/BodyFileCreateDataset'
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+                '400':
+                    description: Bad Request
+
+    /api/v1/file/delete/{jobid}:
+        delete:
+            security:
+                - bearerAuth: []
+            description: Delete a file of the job.
+            operationId: deleteDataset
+            parameters:
+                - in: path
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+                - in: query
+                  name: filename
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                '404':
+                    description: Not found
+                '400':
+                    description: Bad Request
+
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+    schemas:
+        TransformationConfig:
+            title: TransformationConfig
+            required:
+                - Configuration
+            type: object
+            properties:
+                job_name:
+                    title: image_name
+                    type: string
+                ntasks_per_node:
+                    title: ntasks_per_node
+                    type: integer
+                partition:
+                    title: partition
+                    enum: [debug, normal]
+                    type: string
+                image:
+                    title: image
+                    type: string
+                executable_cmd:
+                    title: executable_cmd
+                    type: string
+            description: Transformation data model
+        BodyFileCreateDataset:
+            title: BodyFileCreateDataset
+            required:
+                - file
+            type: object
+            properties:
+                file:
+                    type: string
+                    format: binary
+            description: File object by CreateDataset capability
