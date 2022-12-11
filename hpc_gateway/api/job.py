@@ -49,8 +49,34 @@ def api_get_jobs(current_user):
 
 @job_api_v1.route("/state/<jobid>", methods=["GET"])
 def api_get_job_state(jobid):
-    """get state of a job through firecrest."""
-    pass
+    """get state (return by files in the folder) of a job through firecrest.
+    list files of a job.
+    file contain also the folder and the format is list.
+    """
+    machine = current_app.config["MACHINE"]
+
+    job = get_job(job_id=jobid)
+    remote_folder = job.get("remote_folder")
+
+    try:
+        f7t_client = create_f7t_client()
+        response = f7t_client.list_files(machine=machine, target_path=remote_folder)
+    except Exception as e:
+        return (
+            jsonify(
+                error="unable to list files to job folder.",
+                except_type=str(type(e)),
+            ),
+            500,
+        )
+    else:
+        return (
+            jsonify(
+                files=response,
+                message="Files in the job folder.",
+            ),
+            200,
+        )
 
 
 @job_api_v1.route("/create", methods=["POST"])

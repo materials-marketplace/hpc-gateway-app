@@ -102,6 +102,41 @@ paths:
                                 type: string
                                 example: Unexpected error
 
+    /api/v1/job/state/{jobid}:
+        get:
+            security:
+                - bearerAuth: []
+            description: Get the state of o Transformation
+            operationId: getTransformationState
+            parameters:
+                - in: query
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
+                '404':
+                    description: Not found
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Unexpected error
+
     /api/v1/job/cancel/{jobid}:
         delete:
             security:

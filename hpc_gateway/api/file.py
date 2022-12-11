@@ -84,7 +84,7 @@ def api_list_repo(current_user, jobid):
     except Exception as e:
         return (
             jsonify(
-                error="unable to upload file to job folder.",
+                error="unable to list files to job folder.",
                 except_type=str(type(e)),
             ),
             500,
@@ -93,7 +93,7 @@ def api_list_repo(current_user, jobid):
         return (
             jsonify(
                 files=response,
-                message="File uploaded.",
+                message="Files in the job folder.",
             ),
             200,
         )
