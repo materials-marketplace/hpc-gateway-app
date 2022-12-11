@@ -4,7 +4,7 @@ openapi: 3.0.0
 info:
     title: HPC gateway app (IWM)
     description: Access to IWM HPC through firecrest
-    version: 0.2.0
+    version: 0.2.1
     x-application-name: HPC gateway app (IWM)
     x-api-version: 0.3.0
     x-products:
@@ -73,6 +73,41 @@ paths:
                 - bearerAuth: []
             description: Launch a Transformation
             operationId: updateTransformation
+            parameters:
+                - in: query
+                  name: jobid
+                  schema:
+                      type: string
+                  required: true
+            responses:
+                '200':
+                    description: Success
+                    content:
+                        state:
+                            schema:
+                                type: string
+                                example: running
+                '404':
+                    description: Not found
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Simulation Not found
+                '400':
+                    description: Bad Request
+                    content:
+                        jobId:
+                            schema:
+                                type: string
+                                example: Unexpected error
+
+    /api/v1/job/state/{jobid}:
+        get:
+            security:
+                - bearerAuth: []
+            description: Get the state of o Transformation
+            operationId: getTransformationState
             parameters:
                 - in: query
                   name: jobid
